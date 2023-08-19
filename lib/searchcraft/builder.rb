@@ -27,6 +27,19 @@ class SearchCraft::Builder
     create_indexes!
   end
 
+  # Finds and drops all indexes and sequences on view, and then drops view
+  def drop_view!
+    # drop indexes used by view before being dropped
+    indexes = ActiveRecord::Base.connection.execute("SELECT indexname FROM pg_indexes WHERE tablename = '#{view_name}';")
+    indexes.each do |index|
+      ActiveRecord::Base.connection.execute("DROP INDEX IF EXISTS #{index["indexname"]};")
+    end
+
+    ActiveRecord::Base.connection.execute("DROP MATERIALIZED VIEW IF EXISTS #{view_name} CASCADE;")
+
+    ActiveRecord::Base.connection.execute("DROP SEQUENCE IF EXISTS #{view_id_sequence_name};")
+  end
+
   protected
 
   # Pluralized table name of class

@@ -149,3 +149,28 @@ puts "\nRefresh the view..."
 ProductSearch.refresh!
 puts "Now, there are #{board_games.count} board games in the refreshed view."
 pp board_games.reload
+
+puts "\nRedefine builder to use nextval and sequence for an id column:"
+class ProductSearchBuilder < SearchCraft::Builder
+  def view_scope
+    Product
+      .joins(:categories)
+      .where(active: true) # only active products
+      .where(categories: {active: true}) # only active categories
+      .order(:product_name)
+      .select(
+        "nextval('#{view_id_sequence_name}') AS id, " \
+        "products.id AS product_id, " \
+        "products.name AS product_name, " \
+        "categories.id AS category_id, " \
+        "categories.name AS category_name"
+      )
+  end
+end
+
+# Manually drop + create the materialized view
+ProductSearchBuilder.new.drop_view!
+ProductSearchBuilder.new.create_view!
+ProductSearch.reset_column_information
+puts "ProductSearch now has an id column:"
+pp ProductSearch.all.reload
