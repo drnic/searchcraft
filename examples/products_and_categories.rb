@@ -104,6 +104,8 @@ class ProductSearch < ActiveRecord::Base
 
   belongs_to :product, foreign_key: :product_id, primary_key: :id
   belongs_to :category, foreign_key: :category_id, primary_key: :id
+
+  scope :within_category, ->(category) { where(category: category) }
 end
 
 class ProductSearchBuilder < SearchCraft::Builder
@@ -137,11 +139,11 @@ exit 1 unless ProductSearch.table_exists?
 puts "\nProductSearch rows only include active products and their active categories:"
 pp ProductSearch.all
 puts "\nSearch for Electronics:"
-pp ProductSearch.where(category: electronics)
+pp ProductSearch.within_category(electronics)
 
 puts "\nChange 'Board Games' to active"
 inactive_category.update!(active: true)
-board_games = ProductSearch.where(category: inactive_category)
+board_games = ProductSearch.within_category(inactive_category)
 puts "Initially there are #{board_games.count} board games as we have not refreshed the view."
 pp board_games
 

@@ -12,11 +12,12 @@ Inside Rails and ActiveRecord, you can access a read-only materialized view like
 
 ```ruby
 class ProductSearch < ActiveRecord::Base
-  def readonly?; true; end
+  include SearchCraft::Model
 
-  belongs_to :product
+  belongs_to :product, foreign_key: :product_id, primary_key: :id
+  belongs_to :category, foreign_key: :category_id, primary_key: :id
 
-  scope :within_category, ->(category_id) { where(category_id: category_id) }
+  scope :within_category, ->(category) { where(category: category) }
 end
 ```
 
@@ -24,10 +25,10 @@ Done. Whatever columns you describe in your view will become attributes on your 
 
 All this is already possible with Rails and ActiveRecord. SearchCraft achievement is to make it trivial to write your materialized views, and then to iterate on them. Design them in ActiveRecord or Arel expressions, or even plain SQL. No migrations to rollback and re-run. No keeping track of whether the SQL view in your database matches the SearchCraft code in your Rails app. SearchCraft will automatically create and update your materialized views.
 
-If the underlying data to your SearchCraft materialized view changes and you want to refresh it, then call `refresh` on your model class.
+If the underlying data to your SearchCraft materialized view changes and you want to refresh it, then call `refresh!` on your model class. This is provided by the `SearchCraft::Model` mixin.
 
 ```ruby
-ProductSearch.refresh
+ProductSearch.refresh!
 ```
 
 Update your SearchCraft view, run your tests, they work. Update your SearchCraft view, refresh your development app, and it works. Deploy to production anywhere, and it works.
@@ -41,10 +42,11 @@ class ProductSearchBuilder < SearchCraft::Builder
       .joins(:category)
       .where(active: true) # only active products
       .where(categories: { active: true }) # only active categories
+      .order(:product_name)
       .select(
-        'products.id AS product_id, ' +
-        'products.name AS product_name, ' +
-        'categories.id AS category_id, ' +
+        'products.id AS product_id, ' \
+        'products.name AS product_name, ' \
+        'categories.id AS category_id, ' \
         'categories.name AS category_name'
       )
   end
@@ -52,6 +54,14 @@ end
 ```
 
 SearchCraft will convert this into a materialized view, create it into your database, and the `ProductSearch` model above will start using it when you next reload your development app or run your tests. If you make a change, SearchCraft will drop and recreate the view automatically.
+
+When we use `ProductSearch` we will see the `select()` attributes:
+
+```ruby
+[#<ProductSearch:0x718 product_id: 2, product_name: "iPhone 15", category_id: 1, category_name: "Electronics">,
+ #<ProductSearch:0x420 product_id: 2, product_name: "iPhone 15", category_id: 2, category_name: "Phones">,
+ #<ProductSearch:0x380 product_id: 1, product_name: "Laptop 3", category_id: 1, category_name: "Electronics">]
+```
 
 * A future version of SearchCraft might implement a similar feature for MySQL by creating simple views and caching the results in tables.
 
