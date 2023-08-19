@@ -141,8 +141,8 @@ puts "\nViewHashStore now contains:"
 pp SearchCraft::ViewHashStore.all
 
 puts "\nDoes ProductSearch have a table/view in database? #{ProductSearch.table_exists?}"
+puts "\nWhat does the SQL look like?"
 puts ProductSearchBuilder.new.view_select_sql
-exit 1 unless ProductSearch.table_exists?
 
 puts "\nProductSearch rows only include active products and their active categories:"
 pp ProductSearch.all
@@ -159,6 +159,28 @@ puts "\nRefresh the view..."
 ProductSearch.refresh!
 puts "Now, there are #{board_games.count} board games in the refreshed view."
 pp board_games.reload
+
+puts "\nWe can add indexes to materialized views, say for lookup on category_id:"
+class ProductSearchBuilder < SearchCraft::Builder
+  def view_indexes
+    {
+      # index_name: {columns: ["column1", "column2"], unique: false}
+      category_id: {columns: ["category_id"]}
+    }
+  end
+end
+
+# TODO: include index SQL in view_sql_hash
+SearchCraft::ViewHashStore.destroy_all
+ProductSearchBuilder.new.recreate_view_if_changed!
+puts "\nViewHashStore now contains:"
+pp SearchCraft::ViewHashStore.all
+
+puts "\nShow indexes in for table:"
+results = ActiveRecord::Base.connection.execute("SELECT indexname FROM pg_indexes WHERE tablename = '#{ProductSearch.table_name}';")
+results.each do |row|
+  puts "* #{row["indexname"]}"
+end
 
 puts "\nRedefine builder to use nextval and sequence for an id column:"
 class ProductSearchBuilder < SearchCraft::Builder

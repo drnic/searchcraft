@@ -10,48 +10,50 @@
 class SearchCraft::ViewHashStore < ActiveRecord::Base
   self.table_name = "search_craft_view_hash_stores"
 
-  # Update record for StoreConnect::SearchCached::Builder::Base subclass
-  def self.update_for(builder:)
-    setup_table_if_needed!
-    view_sql_hash = builder.view_sql_hash
-    view_hash_store = find_or_initialize_by(view_name: builder.view_name)
-    view_hash_store.update!(view_sql_hash: view_sql_hash)
-  end
+  class << self
+    # Update record for StoreConnect::SearchCached::Builder::Base subclass
+    def update_for(builder:)
+      setup_table_if_needed!
+      view_sql_hash = builder.view_sql_hash
+      view_hash_store = find_or_initialize_by(view_name: builder.view_name)
+      view_hash_store.update!(view_sql_hash: view_sql_hash)
+    end
 
-  def self.changed?(builder:)
-    setup_table_if_needed!
-    view_sql_hash = builder.view_sql_hash
-    view_hash_store = find_by(view_name: builder.view_name)
-    view_hash_store.nil? || view_hash_store.view_sql_hash != view_sql_hash
-  end
+    def changed?(builder:)
+      setup_table_if_needed!
+      view_sql_hash = builder.view_sql_hash
+      view_hash_store = find_by(view_name: builder.view_name)
+      view_hash_store.nil? || view_hash_store.view_sql_hash != view_sql_hash
+    end
 
-  def self.exists?(builder:)
-    setup_table_if_needed!
-    find_by(view_name: builder.view_name)
-  end
+    def exists?(builder:)
+      setup_table_if_needed!
+      find_by(view_name: builder.view_name)
+    end
 
-  def self.reset!(builder:)
-    setup_table_if_needed!
-    view_hash_store = find_by(view_name: builder.view_name)
-    view_hash_store&.destroy!
-  end
+    def reset!(builder:)
+      setup_table_if_needed!
+      view_hash_store = find_by(view_name: builder.view_name)
+      view_hash_store&.destroy!
+    end
 
-  private
+    private
 
-  def self.setup_table_if_needed!
-    return if table_exists?
+    def setup_table_if_needed!
+      return if table_exists?
 
-    # Migrate table
-    create_table_sql = <<~SQL
-      CREATE TABLE search_craft_view_hash_stores (
-        id serial primary key,
-        view_name varchar(255) not null,
-        view_sql_hash varchar(255) not null,
-        created_at timestamp not null default now(),
-        updated_at timestamp not null default now()
-      );
-    SQL
-    ActiveRecord::Base.connection.execute(create_table_sql)
-    reset_column_information
+      # Migrate table
+      create_table_sql = <<~SQL
+        CREATE TABLE search_craft_view_hash_stores (
+          id serial primary key,
+          view_name varchar(255) not null,
+          view_sql_hash varchar(255) not null,
+          created_at timestamp not null default now(),
+          updated_at timestamp not null default now()
+        );
+      SQL
+      ActiveRecord::Base.connection.execute(create_table_sql)
+      reset_column_information
+    end
   end
 end
