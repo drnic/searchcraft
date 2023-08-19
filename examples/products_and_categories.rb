@@ -19,7 +19,7 @@ at_exit do
   ActiveRecord::Base.connection_pool.disconnect!
   ActiveRecord::Base.establish_connection(DATABASE_URL)
   ActiveRecord::Base.connection.drop_database(database_name)
-  puts "Dropped database '#{database_name}'"
+  puts "\nExiting... Dropped database '#{database_name}'"
 end
 
 # Create the database
@@ -136,8 +136,9 @@ class ProductSearchBuilder < SearchCraft::Builder
   end
 end
 
-# Manually create the materialized view
-ProductSearchBuilder.new.create_view!
+ProductSearchBuilder.new.recreate_view_if_changed!
+puts "\nViewHashStore now contains:"
+pp SearchCraft::ViewHashStore.all
 
 puts "\nDoes ProductSearch have a table/view in database? #{ProductSearch.table_exists?}"
 puts ProductSearchBuilder.new.view_select_sql
@@ -178,8 +179,10 @@ class ProductSearchBuilder < SearchCraft::Builder
 end
 
 # Manually drop + create the materialized view
-ProductSearchBuilder.new.drop_view!
-ProductSearchBuilder.new.create_view!
+ProductSearchBuilder.new.recreate_view_if_changed!
+puts "\nViewHashStore now contains:"
+pp SearchCraft::ViewHashStore.all
+
 ProductSearch.reset_column_information # Not required in development or test environments
-puts "ProductSearch now has an id column:"
+puts "\nProductSearch now has an id column:"
 pp ProductSearch.all.reload

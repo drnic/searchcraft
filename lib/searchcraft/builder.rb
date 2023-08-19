@@ -21,6 +21,20 @@ class SearchCraft::Builder
     Digest::SHA256.hexdigest(view_sql)
   end
 
+  # If missing or changed, drop and create view
+  # Returns false if no change required
+  def recreate_view_if_changed!
+    if SearchCraft::ViewHashStore.changed?(builder: self)
+      warn "Recreating #{view_name} because SQL changed" if SearchCraft::ViewHashStore.exists?(builder: self)
+      drop_view!
+      create_view!
+      # dump_schema!
+      SearchCraft::ViewHashStore.update_for(builder: self)
+    else
+      false
+    end
+  end
+
   def create_view!
     create_sequence!
     ActiveRecord::Base.connection.execute(view_sql)
@@ -40,12 +54,12 @@ class SearchCraft::Builder
     ActiveRecord::Base.connection.execute("DROP SEQUENCE IF EXISTS #{view_id_sequence_name};")
   end
 
-  protected
-
   # Pluralized table name of class
   def view_name
     base_sql_name
   end
+
+  protected
 
   # CREATE SEQUENCE #{view_id_sequence_name} CYCLE;
   # DROP SEQUENCE #{view_id_sequence_name};
