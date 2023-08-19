@@ -152,7 +152,7 @@ pp board_games.reload
 
 puts "\nRedefine builder to use nextval and sequence for an id column:"
 class ProductSearchBuilder < SearchCraft::Builder
-  def view_scope
+  def view_scope # standard:disable Lint/DuplicateMethods
     Product
       .joins(:categories)
       .where(active: true) # only active products
@@ -171,6 +171,6 @@ end
 # Manually drop + create the materialized view
 ProductSearchBuilder.new.drop_view!
 ProductSearchBuilder.new.create_view!
-ProductSearch.reset_column_information
+ProductSearch.reset_column_information # Not required in development or test environments
 puts "ProductSearch now has an id column:"
 pp ProductSearch.all.reload
