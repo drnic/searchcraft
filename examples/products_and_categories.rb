@@ -76,10 +76,14 @@ class ProductCategory < ActiveRecord::Base
   belongs_to :category
 end
 
+# Our model for the materialized view created by ProductSearchBuilder below
 class ProductSearch < ActiveRecord::Base
   def read_only?
     true
   end
+
+  belongs_to :product, foreign_key: :product_id, primary_key: :id
+  belongs_to :category, foreign_key: :category_id, primary_key: :id
 end
 
 class ProductSearchBuilder < SearchCraft::Builder
@@ -126,11 +130,14 @@ Category.all.each { |c| puts c.name }
 puts "\nProduct Categories:"
 ProductCategory.all.each { |pc| puts "Product: #{pc.product.name}, Category: #{pc.category.name}" }
 
-puts
-puts "Does ProductSearch have a table/view in database? #{ProductSearch.table_exists?}"
-puts ProductSearchBuilder.new.view_select_sql
-pp ProductSearchBuilder.new.view_scope.map(&:attributes)
+# Manually create the materialized view
+ProductSearchBuilder.new.create_view!
 
+puts "\nDoes ProductSearch have a table/view in database? #{ProductSearch.table_exists?}"
+puts ProductSearchBuilder.new.view_select_sql
 exit 1 unless ProductSearch.table_exists?
-puts "ProductSearch rows:"
+
+puts "\nProductSearch rows only include active products and their active categories:"
 pp ProductSearch.all
+puts "\nSearch for Electronics:"
+pp ProductSearch.where(category: electronics)
