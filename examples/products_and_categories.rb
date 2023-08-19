@@ -76,6 +76,28 @@ class ProductCategory < ActiveRecord::Base
   belongs_to :category
 end
 
+# Inserting seed data
+laptop = Product.create!(name: "Laptop 3")
+iphone = Product.create!(name: "iPhone 15")
+inactive_iphone = Product.create!(name: "iPhone 2", active: false)
+monopoly = Product.create!(name: "Monopoly")
+electronics = Category.create!(name: "Electronics")
+phones = Category.create!(name: "Phones")
+inactive_category = Category.create!(name: "Board Games", active: false)
+ProductCategory.create!(product: laptop, category: electronics)
+ProductCategory.create!(product: iphone, category: electronics)
+ProductCategory.create!(product: iphone, category: phones)
+ProductCategory.create!(product: inactive_iphone, category: electronics)
+ProductCategory.create!(product: monopoly, category: inactive_category)
+
+# Printing all three models' rows
+puts "Products:"
+Product.all.each { |p| puts p.name }
+puts "\nCategories:"
+Category.all.each { |c| puts c.name }
+puts "\nProduct Categories:"
+ProductCategory.all.each { |pc| puts "Product: #{pc.product.name}, Category: #{pc.category.name}" }
+
 # Our model for the materialized view created by ProductSearchBuilder below
 class ProductSearch < ActiveRecord::Base
   include SearchCraft::Model
@@ -104,28 +126,6 @@ class ProductSearchBuilder < SearchCraft::Builder
       )
   end
 end
-
-# Inserting seed data
-laptop = Product.create!(name: "Laptop 3")
-iphone = Product.create!(name: "iPhone 15")
-inactive_iphone = Product.create!(name: "iPhone 2", active: false)
-monopoly = Product.create!(name: "Monopoly")
-electronics = Category.create!(name: "Electronics")
-phones = Category.create!(name: "Phones")
-inactive_category = Category.create!(name: "Board Games", active: false)
-ProductCategory.create!(product: laptop, category: electronics)
-ProductCategory.create!(product: iphone, category: electronics)
-ProductCategory.create!(product: iphone, category: phones)
-ProductCategory.create!(product: inactive_iphone, category: electronics)
-ProductCategory.create!(product: monopoly, category: inactive_category)
-
-# Printing all three models' rows
-puts "Products:"
-Product.all.each { |p| puts p.name }
-puts "\nCategories:"
-Category.all.each { |c| puts c.name }
-puts "\nProduct Categories:"
-ProductCategory.all.each { |pc| puts "Product: #{pc.product.name}, Category: #{pc.category.name}" }
 
 # Manually create the materialized view
 ProductSearchBuilder.new.create_view!
