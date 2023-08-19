@@ -78,9 +78,7 @@ end
 
 # Our model for the materialized view created by ProductSearchBuilder below
 class ProductSearch < ActiveRecord::Base
-  def read_only?
-    true
-  end
+  include SearchCraft::Model
 
   belongs_to :product, foreign_key: :product_id, primary_key: :id
   belongs_to :category, foreign_key: :category_id, primary_key: :id
@@ -119,7 +117,6 @@ ProductCategory.create!(product: laptop, category: electronics)
 ProductCategory.create!(product: iphone, category: electronics)
 ProductCategory.create!(product: iphone, category: phones)
 ProductCategory.create!(product: inactive_iphone, category: electronics)
-ProductCategory.create!(product: laptop, category: inactive_category)
 ProductCategory.create!(product: monopoly, category: inactive_category)
 
 # Printing all three models' rows
@@ -141,3 +138,14 @@ puts "\nProductSearch rows only include active products and their active categor
 pp ProductSearch.all
 puts "\nSearch for Electronics:"
 pp ProductSearch.where(category: electronics)
+
+puts "\nChange 'Board Games' to active"
+inactive_category.update!(active: true)
+board_games = ProductSearch.where(category: inactive_category)
+puts "Initially there are #{board_games.count} board games as we have not refreshed the view."
+pp board_games
+
+puts "\nRefresh the view..."
+ProductSearch.refresh!
+puts "Now, there are #{board_games.count} board games in the refreshed view."
+pp board_games.reload
