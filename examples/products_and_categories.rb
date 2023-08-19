@@ -15,6 +15,13 @@ if ActiveRecord::Base.connection.execute("SELECT 1 FROM pg_database WHERE datnam
   puts "Dropped existing database '#{database_name}'"
 end
 
+at_exit do
+  ActiveRecord::Base.connection_pool.disconnect!
+  ActiveRecord::Base.establish_connection(DATABASE_URL)
+  ActiveRecord::Base.connection.drop_database(database_name)
+  puts "Dropped database '#{database_name}'"
+end
+
 # Create the database
 ActiveRecord::Base.connection.create_database(database_name)
 puts "Created new database '#{database_name}'"
