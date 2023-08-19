@@ -1,13 +1,13 @@
-require 'active_record'
-require 'pg'
-require_relative '../lib/searchcraft'
+require "active_record"
+require "pg"
+require_relative "../lib/searchcraft"
 
 # Connection to PostgreSQL server
-DATABASE_URL = ENV.fetch('DATABASE_URL', 'postgres://localhost:5432')
+DATABASE_URL = ENV.fetch("DATABASE_URL", "postgres://localhost:5432")
 ActiveRecord::Base.establish_connection(DATABASE_URL)
 
 # Database name
-database_name = 'searchcraft_example_products_and_categories'
+database_name = "searchcraft_example_products_and_categories"
 
 # Drop the database if it already exists
 if ActiveRecord::Base.connection.execute("SELECT 1 FROM pg_database WHERE datname = '#{database_name}'").any?
@@ -19,7 +19,6 @@ end
 ActiveRecord::Base.connection.create_database(database_name)
 puts "Created new database '#{database_name}'"
 ActiveRecord::Base.establish_connection("#{DATABASE_URL}/#{database_name}")
-
 
 # Migration for products table
 class CreateProducts < ActiveRecord::Migration[7.0]
@@ -78,20 +77,40 @@ class ProductCategory < ActiveRecord::Base
 end
 
 class ProductSearch < ActiveRecord::Base
-  def read_only?; true; end
+  def read_only?
+    true
+  end
 end
 
 class ProductSearchBuilder < SearchCraft::Builder
+  def view_scope
+    Product
+      .joins(:categories)
+      .where(active: true) # only active products
+      .where(categories: {active: true}) # only active categories
+      .order(:product_name)
+      .select(
+        "products.id AS product_id, " \
+        "products.name AS product_name, " \
+        "categories.id AS category_id, " \
+        "categories.name AS category_name"
+        # Or could use Arel:
+        # Product.arel_table[:id].as("product_id"),
+        # Product.arel_table[:name].as("product_name"),
+        # Category.arel_table[:id].as("category_id"),
+        # Category.arel_table[:name].as("category_name")
+      )
+  end
 end
 
 # Inserting seed data
-laptop = Product.create!(name: 'Laptop 3')
-iphone = Product.create!(name: 'iPhone 15')
-inactive_iphone = Product.create!(name: 'iPhone 2', active: false)
-monopoly = Product.create!(name: 'Monopoly')
-electronics = Category.create!(name: 'Electronics')
-phones = Category.create!(name: 'Phones')
-inactive_category = Category.create!(name: 'Board Games', active: false)
+laptop = Product.create!(name: "Laptop 3")
+iphone = Product.create!(name: "iPhone 15")
+inactive_iphone = Product.create!(name: "iPhone 2", active: false)
+monopoly = Product.create!(name: "Monopoly")
+electronics = Category.create!(name: "Electronics")
+phones = Category.create!(name: "Phones")
+inactive_category = Category.create!(name: "Board Games", active: false)
 ProductCategory.create!(product: laptop, category: electronics)
 ProductCategory.create!(product: iphone, category: electronics)
 ProductCategory.create!(product: iphone, category: phones)
@@ -109,6 +128,9 @@ ProductCategory.all.each { |pc| puts "Product: #{pc.product.name}, Category: #{p
 
 puts
 puts "Does ProductSearch have a table/view in database? #{ProductSearch.table_exists?}"
+puts ProductSearchBuilder.new.view_select_sql
+pp ProductSearchBuilder.new.view_scope.map(&:attributes)
+
 exit 1 unless ProductSearch.table_exists?
 puts "ProductSearch rows:"
 pp ProductSearch.all
