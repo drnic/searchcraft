@@ -15,12 +15,24 @@ class ProductSearch < ActiveRecord::Base
     def readonly?; true; end
 
     belongs_to :product
+
+    scope :with_category, ->(category) { where(category_id: category.id) }
 end
 ```
 
-Done. Whatever columns you describe in your view will become attributes on your model. If you include foreign keys, then you can use `belongs_to` associations.
+Done. Whatever columns you describe in your view will become attributes on your model. If you include foreign keys, then you can use `belongs_to` associations. You can add scopes. You can add methods. You can use it as the starting point for queries with the rest of your SQL database. It's just a regular ActiveRecord model.
 
-All this is already possible with Rails and ActiveRecord. SearchCraft makes it trivial to iterate the design of your materialized views. Design them in ActiveRecord or Arel expressions, or even plain SQL.
+All this is already possible with Rails and ActiveRecord. SearchCraft achievement is to make it trivial to write your materialized views, and then to iterate on them. Design them in ActiveRecord or Arel expressions, or even plain SQL. No migrations to rollback and re-run. No keeping track of whether the SQL view in your database matches the SearchCraft code in your Rails app. SearchCraft will automatically create and update your materialized views.
+
+If the underlying data to your SearchCraft materialized view changes and you want to refresh it, then call `refresh` on your model class.
+
+```ruby
+ProductSearch.refresh
+```
+
+Update your SearchCraft view, run your tests, they work. Update your SearchCraft view, refresh your development app, and it works. Deploy to production anywhere, and it works.
+
+What does it look like to design a materialized view with SearchCraft? Provide a method `view_scope` that returns an ActiveRecord/Arel query.
 
 ```ruby
 class ProductSearchBuilder < SearchCraft::Builder
@@ -33,6 +45,8 @@ class ProductSearchBuilder < SearchCraft::Builder
     end
 end
 ```
+
+SearchCraft will convert this into a materialized view, create it into your database, and the `ProductSearch` model above will start using it when you next reload your development app or run your tests. If you make a change, SearchCraft will drop and recreate the view automatically.
 
 * A future version of SearchCraft might implement a similar feature for MySQL by creating simple views and caching the results in tables.
 
