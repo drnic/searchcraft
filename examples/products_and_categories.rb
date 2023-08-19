@@ -1,5 +1,6 @@
 require 'active_record'
 require 'pg'
+require_relative '../lib/searchcraft'
 
 # Connection to PostgreSQL server
 DATABASE_URL = ENV.fetch('DATABASE_URL', 'postgres://localhost:5432')
@@ -78,6 +79,9 @@ end
 
 class ProductSearch < ActiveRecord::Base
   def read_only?; true; end
+end
+
+class ProductSearchBuilder < SearchCraft::Builder
 end
 
 # Inserting seed data

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "searchcraft/version"
-
 module SearchCraft
   class Error < StandardError; end
-  # Your code goes here...
 end
+
+require_relative "searchcraft/version"
+require_relative "searchcraft/builder"

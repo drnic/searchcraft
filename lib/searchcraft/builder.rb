@@ -1,0 +1,2 @@
+class SearchCraft::Builder
+end

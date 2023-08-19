@@ -6,3 +6,4 @@ source "https://rubygems.org"
 gemspec
 
 gem "standard", "~> 1.3"
+gem "ripper-tags", "~> 1.0"
