@@ -12,11 +12,11 @@ Inside Rails and ActiveRecord, you can access a read-only materialized view like
 
 ```ruby
 class ProductSearch < ActiveRecord::Base
-    def readonly?; true; end
+  def readonly?; true; end
 
-    belongs_to :product
+  belongs_to :product
 
-    scope :with_category, ->(category) { where(category_id: category.id) }
+  scope :within_category, ->(category_id) { where(category_id: category_id) }
 end
 ```
 
@@ -36,13 +36,18 @@ What does it look like to design a materialized view with SearchCraft? Provide a
 
 ```ruby
 class ProductSearchBuilder < SearchCraft::Builder
-    def view_scope
-        Product
-            .joins(:category)
-            .where('products.name ILIKE ?', "%#{query}%")
-            .where('categories.name ILIKE ?', "%#{query}%")
-            .select('products.id AS product_id, categories.id AS category_id')
-    end
+  def view_scope
+    Product
+      .joins(:category)
+      .where(active: true) # only active products
+      .where(categories: { active: true }) # only active categories
+      .select(
+        'products.id AS product_id, ' +
+        'products.name AS product_name, ' +
+        'categories.id AS category_id, ' +
+        'categories.name AS category_name'
+      )
+  end
 end
 ```
 
