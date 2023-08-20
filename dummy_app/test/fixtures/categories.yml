@@ -10,9 +10,13 @@
 #
 
 one:
-  name: MyString
-  active: false
+  name: Cat One
+  active: true
 
 two:
-  name: MyString
+  name: Cat Two
+  active: true
+
+inactive:
+  name: Inactive
   active: false

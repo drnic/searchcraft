@@ -12,6 +12,8 @@ class Product < ApplicationRecord
   has_many :product_categories, dependent: :destroy
   has_many :categories, through: :product_categories
 
+  scope :within_category, ->(category) { joins(:product_categories).where(product_categories: {category_id: category.id}) }
+
   # Returns name, or if inactive, returns "name (inactive)"
   def to_s
     if active?

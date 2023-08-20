@@ -19,10 +19,14 @@
 #  fk_rails_...  (product_id => products.id)
 #
 
-one:
+one_one:
   product: one
   category: one
 
-two:
+two_two:
   product: two
   category: two
+
+inactive:
+  product: inactive
+  category: inactive

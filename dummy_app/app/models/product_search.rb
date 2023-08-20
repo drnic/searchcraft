@@ -5,4 +5,9 @@ class ProductSearch < ActiveRecord::Base
   belongs_to :category, foreign_key: :category_id, primary_key: :id
 
   scope :within_category, ->(category) { where(category: category) }
+
+  # Returns name, or if inactive, returns "name (inactive)"
+  def to_s
+    product_name
+  end
 end

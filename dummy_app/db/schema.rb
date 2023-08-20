@@ -59,5 +59,4 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_20_075247) do
     ORDER BY products.name;
   SQL
   add_index "product_searches", ["category_id"], name: "idx_product_searches_category_id"
-
 end

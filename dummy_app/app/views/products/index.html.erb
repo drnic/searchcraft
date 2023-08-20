@@ -1,0 +1,28 @@
+<h1>Menu</h1>
+
+<ol>
+  <li><%= link_to "Normal", "/" %></li>
+  <li><%= link_to "SearchCraft", "/?searchcraft" %></li>
+</ol>
+
+<h1>Categories</h1>
+
+<% if @categories.any? %>
+  <ol>
+    <% @categories.each do |category| %>
+      <li><%= category %></li>
+    <% end %>
+  </ol>
+<% end %>
+
+<h1><%= @products.first.class.name.pluralize %></h1>
+
+<% if @products.any? %>
+  <ol>
+    <% @products.each do |product| %>
+      <li><%= product %></li>
+    <% end %>
+  </ol>
+<% else %>
+  <p>No products found.</p>
+<% end %>
