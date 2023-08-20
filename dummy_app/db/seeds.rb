@@ -1,4 +1,4 @@
-num_products = ENV.fetch('NUM_PRODUCTS', 50).to_i
+num_products = ENV.fetch("NUM_PRODUCTS", 50).to_i
 
 ProductCategory.destroy_all
 Product.destroy_all
@@ -25,12 +25,11 @@ end
 
 puts "Creating product categories..."
 Product.all.each do |product|
-  join_categories = Category.limit(rand(1..category_names.count))
-  join_categories.each do |category|
-    ProductCategory.create!(
-      product: product,
-      category: category
-    )
-  end
+  category_name = product.name.split.last
+  category = Category.find_by(name: category_name)
+  ProductCategory.create!(
+    product: product,
+    category: category
+  )
 end
 puts "Created #{ProductCategory.count} product categories."

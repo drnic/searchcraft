@@ -37,6 +37,27 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_20_075247) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "search_craft_view_hash_stores", id: :serial, force: :cascade do |t|
+    t.string "view_name", limit: 255, null: false
+    t.string "view_sql_hash", limit: 255, null: false
+    t.datetime "created_at", precision: nil, default: -> { "now()" }, null: false
+    t.datetime "updated_at", precision: nil, default: -> { "now()" }, null: false
+  end
+
   add_foreign_key "product_categories", "categories"
   add_foreign_key "product_categories", "products"
+
+  create_view "product_searches", materialized: true, sql_definition: <<-SQL
+      SELECT products.id AS product_id,
+      products.name AS product_name,
+      categories.id AS category_id,
+      categories.name AS category_name
+     FROM ((products
+       JOIN product_categories ON ((product_categories.product_id = products.id)))
+       JOIN categories ON ((categories.id = product_categories.category_id)))
+    WHERE ((products.active = true) AND (categories.active = true))
+    ORDER BY products.name;
+  SQL
+  add_index "product_searches", ["category_id"], name: "idx_product_searches_category_id"
+
 end
