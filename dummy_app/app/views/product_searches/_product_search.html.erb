@@ -1,0 +1,12 @@
+<li id="<%= dom_id(product_search) %>">
+  <span><%= product_search %></span>
+  <span>
+    <%= number_to_currency(product_search.base_price / 100.0) %>
+    <% if product_search.sale_price %>
+      <span style="color: red;">
+        SALE
+        <%= number_to_currency(product_search.sale_price / 100.0) %>
+      </span>
+    <% end %>
+  </span>
+</li>

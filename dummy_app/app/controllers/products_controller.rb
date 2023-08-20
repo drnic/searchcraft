@@ -1,4 +1,6 @@
 class ProductsController < ApplicationController
+  before_action :set_currency
+
   def index
     if (@using_searchcraft = params.delete(:searchcraft) == "true")
       return index_by_searchcraft
@@ -14,6 +16,8 @@ class ProductsController < ApplicationController
     @products = @products.load
 
     @categories = Category.order(:name).load
+  rescue ActiveRecord::RecordNotFound
+    redirect_to root_url
   end
 
   private
@@ -29,5 +33,9 @@ class ProductsController < ApplicationController
     @products = @products.load
 
     @categories = Category.order(:name).load
+  end
+
+  def set_currency
+    @currency = params[:currency] || "AUD"
   end
 end

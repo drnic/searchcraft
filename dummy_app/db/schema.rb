@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_20_075247) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_20_213800) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -30,6 +30,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_20_075247) do
     t.index ["product_id"], name: "index_product_categories_on_product_id"
   end
 
+  create_table "product_prices", force: :cascade do |t|
+    t.bigint "product_id", null: false
+    t.integer "base_price", null: false
+    t.integer "sale_price"
+    t.string "currency", default: "AUD", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_product_prices_on_product_id"
+  end
+
   create_table "products", force: :cascade do |t|
     t.string "name"
     t.boolean "active", default: true
@@ -46,6 +56,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_20_075247) do
 
   add_foreign_key "product_categories", "categories"
   add_foreign_key "product_categories", "products"
+  add_foreign_key "product_prices", "products"
 
   create_view "product_searches", materialized: true, sql_definition: <<-SQL
       SELECT products.id AS product_id,

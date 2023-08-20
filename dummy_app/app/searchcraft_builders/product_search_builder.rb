@@ -1,7 +1,7 @@
 class ProductSearchBuilder < SearchCraft::Builder
   def view_scope # standard:disable Lint/DuplicateMethods
     Product
-      .joins(:categories)
+      .joins(:categories, :product_prices)
       .where(active: true) # only active products
       .where(categories: {active: true}) # only active categories
       .order(:product_name)
@@ -9,7 +9,11 @@ class ProductSearchBuilder < SearchCraft::Builder
         "products.id AS product_id, " \
         "products.name AS product_name, " \
         "categories.id AS category_id, " \
-        "categories.name AS category_name"
+        "categories.name AS category_name", \
+        "product_prices.base_price AS base_price, " \
+        "product_prices.sale_price AS sale_price, " \
+        "product_prices.currency AS currency, " \
+        "COALESCE(product_prices.sale_price, product_prices.base_price) AS price"
       )
   end
 

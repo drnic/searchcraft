@@ -6,10 +6,21 @@ Category.destroy_all
 
 puts "Creating #{num_products} products..."
 num_products.times do |i|
-  Product.create!(
+  product = Product.create!(
     name: Faker::Commerce.product_name,
     active: true
   )
+
+  # Add a price between 100 and 10_000
+  price = product.product_prices.create!(
+    base_price: rand(100..10_000)
+  )
+  # 30% of the time, give a sale price, which is 10-50% off the base price
+  if rand(1..10) <= 3
+    price.update!(
+      sale_price: price.base_price * (1 - rand(10..50) / 100.0)
+    )
+  end
 end
 
 # Split product names into categories

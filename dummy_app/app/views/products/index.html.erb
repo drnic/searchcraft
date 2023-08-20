@@ -4,6 +4,8 @@
 <% url_params[:searchcraft] = @using_searchcraft %>
 <% url_params[:category_id] = @category.id if @category %>
 
+<p>Currency: <%= @currency %></p>
+
 <ol>
   <li><%= link_to "Normal", root_url(url_params.merge({searchcraft: false})) %></li>
   <li><%= link_to "SearchCraft", root_url(url_params.merge({searchcraft: true})) %></li>
@@ -24,7 +26,7 @@
 <% if @products.any? %>
   <ol>
     <% @products.each do |product| %>
-      <li><%= product %></li>
+      <%= render product %>
     <% end %>
   </ol>
 <% else %>

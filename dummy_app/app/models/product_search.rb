@@ -1,3 +1,16 @@
+# == Schema Information
+#
+# Table name: product_searches
+#
+#  category_name :string
+#  product_name  :string
+#  category_id   :bigint
+#  product_id    :bigint
+#
+# Indexes
+#
+#  idx_product_searches_category_id  (category_id)
+#
 class ProductSearch < ActiveRecord::Base
   include SearchCraft::Model
 

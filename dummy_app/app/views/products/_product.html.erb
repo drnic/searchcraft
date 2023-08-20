@@ -1,0 +1,15 @@
+<li id="<%= dom_id(product) %>">
+  <span><%= product %></span>
+  <% price = product.product_prices.find_by(currency: @currency) %>
+  <% if price %>
+    <span>
+      <%= number_to_currency(price.base_price / 100.0) %>
+      <% if price.sale_price %>
+        <span style="color: red;">
+          SALE
+          <%= number_to_currency(price.sale_price / 100.0) %>
+        </span>
+      <% end %>
+    </span>
+  <% end %>
+</li>

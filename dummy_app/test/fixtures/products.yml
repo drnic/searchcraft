@@ -11,7 +11,7 @@
 
 one:
   name: One
-  active: false
+  active: true
 
 two:
   name: Two
