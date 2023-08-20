@@ -22,7 +22,6 @@ PreCommit:
     enabled: true
     required: true
     command: ['bundle', 'exec', 'standardrb'] # Invoke within Bundler context
-    flags: ['--fix']
   ErbLint:
     enabled: true
     required: true
