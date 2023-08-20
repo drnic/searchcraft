@@ -33,6 +33,7 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
+
     - name: Run tests
       run: bundle exec rake test
       env:
@@ -65,14 +66,12 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
 
-    - name: Install dependencies for dummy app
-      run: cd dummy_app && bundle install
-
     - name: Run tests
       env:
         DATABASE_URL: postgres://postgres:password@localhost:5432/test
         RAILS_ENV: test
       run: |
+        cd dummy_app
         bin/rails test:prepare
         bin/rails db:test:prepare
         bin/rails test
