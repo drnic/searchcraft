@@ -58,3 +58,5 @@ end
 gem "faker", "~> 3.2"
 
 gem "annotate", "~> 3.2"
+
+gem "rack-mini-profiler", "~> 3.1", require: false
