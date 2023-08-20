@@ -16,6 +16,16 @@ jobs:
         ruby:
           - '3.2.2'
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: searchcraft_dummy_app_test
+        ports:
+          - 5432:5432
+
     steps:
     - uses: actions/checkout@v3
     - name: Set up Ruby
@@ -23,8 +33,10 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
-    - name: Run the default task
-      run: bundle exec rake
+    - name: Run tests
+      run: bundle exec rake test
+      env:
+        DATABASE_URL: postgres://postgres:password@localhost:5432/test
 
   test_dummy_app:
     runs-on: ubuntu-latest
@@ -39,7 +51,7 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: password
           POSTGRES_DB: searchcraft_dummy_app_test
         ports:
           - 5432:5432
@@ -56,14 +68,12 @@ jobs:
     - name: Install dependencies for dummy app
       run: cd dummy_app && bundle install
 
-    - name: Setup database for dummy app
-      run: cd dummy_app && rake db:create db:migrate RAILS_ENV=test
+    - name: Run tests
       env:
+        DATABASE_URL: postgres://postgres:password@localhost:5432/test
         RAILS_ENV: test
-        DATABASE_URL: postgres://postgres:postgres@localhost:5432/searchcraft_dummy_app_test
-
-    - name: Run dummy app's tests
-      run: cd dummy_app && rake test
-
-    - name: Run dummy app's integration tests
-      run: cd dummy_app && rake test:integration
+      run: |
+        bin/rails test:prepare
+        bin/rails db:test:prepare
+        bin/rails test
+        bin/rails test:system
