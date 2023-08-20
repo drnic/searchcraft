@@ -8,7 +8,7 @@ on:
   pull_request:
 
 jobs:
-  build:
+  test_gem:
     runs-on: ubuntu-latest
     name: Ruby ${{ matrix.ruby }}
     strategy:
@@ -25,3 +25,45 @@ jobs:
         bundler-cache: true
     - name: Run the default task
       run: bundle exec rake
+
+  test_dummy_app:
+    runs-on: ubuntu-latest
+    name: Rails App ${{ matrix.ruby }}
+    strategy:
+      matrix:
+        ruby:
+          - '3.2.2'
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: searchcraft_dummy_app_test
+        ports:
+          - 5432:5432
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+        bundler-cache: true
+
+    - name: Install dependencies for dummy app
+      run: cd dummy_app && bundle install
+
+    - name: Setup database for dummy app
+      run: cd dummy_app && rake db:create db:migrate RAILS_ENV=test
+      env:
+        RAILS_ENV: test
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/searchcraft_dummy_app_test
+
+    - name: Run dummy app's tests
+      run: cd dummy_app && rake test
+
+    - name: Run dummy app's integration tests
+      run: cd dummy_app && rake test:integration
