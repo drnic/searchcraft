@@ -12,5 +12,6 @@ class ActiveSupport::TestCase
   # Run additional setup code after fixtures are loaded
   setup do
     ProductSearchBuilder.new.recreate_view_if_changed!
+    OnsaleSearchBuilder.new.recreate_view_if_changed!
   end
 end

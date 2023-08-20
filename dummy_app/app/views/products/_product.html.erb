@@ -1,5 +1,5 @@
 <li id="<%= dom_id(product) %>">
-  <span><%= product %></span>
+  <span><%= product.name %></span>
   <% price = product.product_prices.find_by(currency: @currency) %>
   <% if price %>
     <span>

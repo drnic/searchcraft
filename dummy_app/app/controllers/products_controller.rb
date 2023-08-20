@@ -16,6 +16,20 @@ class ProductsController < ApplicationController
     end
 
     @products = @products.load
+
+    # Find the products on sale (ProductPrice.sale_price is not null)
+    # and with the biggest base price to sale price discount %
+    @onsale_products = Product.joins(:product_prices)
+      .where(active: true) # only active products
+      .where(product_prices: {sale_price: [1..Float::INFINITY]}) # only products on sale
+      .where(product_prices: {currency: @currency})
+      .order("discount_percent DESC")
+      .limit(5)
+      .select(
+        "products.*, " \
+        "CAST(ROUND((1 - (1.0 * product_prices.sale_price / product_prices.base_price)) * 100) AS integer) AS discount_percent"
+      )
+      .load
   rescue ActiveRecord::RecordNotFound
     redirect_to root_url
   end
@@ -34,9 +48,8 @@ class ProductsController < ApplicationController
     end
 
     @category = Category.find(category_id)
-    @products = @products.within_category(@category)
-
-    @products = @products.load
+    @products = ProductSearch.within_category(@category).load
+    @onsale_products = OnsaleSearch.all.load
   end
 
   def set_currency

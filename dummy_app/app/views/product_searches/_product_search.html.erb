@@ -1,5 +1,5 @@
 <li id="product_<%= product_search.product_id %>">
-  <span><%= product_search %></span>
+  <span><%= product_search.product_name %></span>
   <span>
     <%= number_to_currency(product_search.base_price / 100.0) %>
     <% if product_search.sale_price %>

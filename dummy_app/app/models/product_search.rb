@@ -2,8 +2,12 @@
 #
 # Table name: product_searches
 #
+#  base_price    :integer
 #  category_name :string
+#  currency      :string
+#  price         :integer
 #  product_name  :string
+#  sale_price    :integer
 #  category_id   :bigint
 #  product_id    :bigint
 #

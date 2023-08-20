@@ -11,6 +11,12 @@
   <li><%= link_to "SearchCraft", root_url(url_params.merge({searchcraft: true})) %></li>
 </ol>
 
+<% if @onsale_products %>
+  <h1>Biggest Discounts</h1>
+
+  <ol><%= render @onsale_products %></ol>
+<% end %>
+
 <h1>Categories</h1>
 
 <% if @categories.any? %>

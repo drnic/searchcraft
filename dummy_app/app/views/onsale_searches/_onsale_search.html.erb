@@ -1,0 +1,13 @@
+<li id="product_<%= onsale_search.product_id %>">
+  <span><%= onsale_search.product_name %></span>
+  <span>
+    <%= number_to_currency(onsale_search.base_price / 100.0) %>
+    <span style="color: red;">
+      SALE
+      <%= number_to_currency(onsale_search.sale_price / 100.0) %>
+    </span>
+    <span>
+      <%= onsale_search.discount_percent %>% OFF
+    </span>
+  </span>
+</li>
