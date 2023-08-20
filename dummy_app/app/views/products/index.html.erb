@@ -1,8 +1,12 @@
 <h1>Menu</h1>
 
+<% url_params = {} %>
+<% url_params[:searchcraft] = @using_searchcraft %>
+<% url_params[:category_id] = @category.id if @category %>
+
 <ol>
-  <li><%= link_to "Normal", "/" %></li>
-  <li><%= link_to "SearchCraft", "/?searchcraft" %></li>
+  <li><%= link_to "Normal", root_url(url_params.merge({searchcraft: false})) %></li>
+  <li><%= link_to "SearchCraft", root_url(url_params.merge({searchcraft: true})) %></li>
 </ol>
 
 <h1>Categories</h1>
@@ -10,7 +14,7 @@
 <% if @categories.any? %>
   <ol>
     <% @categories.each do |category| %>
-      <li><%= category %></li>
+      <li><%= link_to category, root_url(url_params.merge({category_id: category.id})) %></li>
     <% end %>
   </ol>
 <% end %>
