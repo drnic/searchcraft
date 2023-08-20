@@ -1,4 +1,4 @@
-<li id="<%= dom_id(product_search) %>">
+<li id="product_<%= product_search.product_id %>">
   <span><%= product_search %></span>
   <span>
     <%= number_to_currency(product_search.base_price / 100.0) %>

@@ -9,5 +9,8 @@ class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
 
-  # Add more helper methods to be used by all tests here...
+  # Run additional setup code after fixtures are loaded
+  setup do
+    ProductSearchBuilder.new.recreate_view_if_changed!
+  end
 end
