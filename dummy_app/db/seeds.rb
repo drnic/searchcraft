@@ -1,4 +1,4 @@
-num_products = ENV.fetch("NUM_PRODUCTS", 50).to_i
+num_products = ENV.fetch("NUM_PRODUCTS", 500).to_i
 
 ProductCategory.destroy_all
 Product.destroy_all
@@ -12,8 +12,8 @@ num_products.times do |i|
   )
 end
 
-# Products' name ends with their category, e.g. Awesome Paper Knife -> Knife
-category_names = Product.pluck(:name).map { |name| name.split.last }.uniq
+# Split product names into categories
+category_names = Product.pluck(:name).map { |name| name.split }.flatten.uniq
 
 puts "Creating #{category_names.count} categories..."
 category_names.each do |name|
@@ -25,11 +25,13 @@ end
 
 puts "Creating product categories..."
 Product.all.each do |product|
-  category_name = product.name.split.last
-  category = Category.find_by(name: category_name)
-  ProductCategory.create!(
-    product: product,
-    category: category
-  )
+  category_names = product.name.split
+  category_names.each do |category_name|
+    category = Category.find_by(name: category_name)
+    ProductCategory.create!(
+      product: product,
+      category: category
+    )
+  end
 end
 puts "Created #{ProductCategory.count} product categories."
