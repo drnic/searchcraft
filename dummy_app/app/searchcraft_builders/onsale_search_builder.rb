@@ -1,11 +1,11 @@
 class OnsaleSearchBuilder < SearchCraft::Builder
-  def view_scope # standard:disable Lint/DuplicateMethods
+  def view_scope
     Product
       .joins(:product_prices)
       .where(active: true) # only active products
       .where(product_prices: {sale_price: [1..Float::INFINITY]}) # only products on sale
       .order("discount_percent DESC")
-      .limit(5)
+      .limit(4)
       .select(
         "products.id AS product_id, " \
         "products.name AS product_name, " \

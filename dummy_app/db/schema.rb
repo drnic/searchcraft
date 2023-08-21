@@ -59,15 +59,36 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_20_213800) do
   add_foreign_key "product_prices", "products"
 
   create_view "product_searches", materialized: true, sql_definition: <<-SQL
-      SELECT products.id AS product_id,
+      SELECT 6 AS number,
+      products.id AS product_id,
       products.name AS product_name,
       categories.id AS category_id,
-      categories.name AS category_name
-     FROM ((products
+      categories.name AS category_name,
+      product_prices.base_price,
+      product_prices.sale_price,
+      product_prices.currency,
+      COALESCE(product_prices.sale_price, product_prices.base_price) AS price
+     FROM (((products
        JOIN product_categories ON ((product_categories.product_id = products.id)))
        JOIN categories ON ((categories.id = product_categories.category_id)))
+       JOIN product_prices ON ((product_prices.product_id = products.id)))
     WHERE ((products.active = true) AND (categories.active = true))
     ORDER BY products.name;
   SQL
   add_index "product_searches", ["category_id"], name: "idx_product_searches_category_id"
+
+  create_view "onsale_searches", materialized: true, sql_definition: <<-SQL
+      SELECT products.id AS product_id,
+      products.name AS product_name,
+      product_prices.base_price,
+      product_prices.sale_price,
+      product_prices.sale_price AS price,
+      product_prices.currency,
+      (round((((1)::numeric - ((1.0 * (product_prices.sale_price)::numeric) / (product_prices.base_price)::numeric)) * (100)::numeric)))::integer AS discount_percent
+     FROM (products
+       JOIN product_prices ON ((product_prices.product_id = products.id)))
+    WHERE ((products.active = true) AND (product_prices.sale_price >= 1))
+    ORDER BY ((round((((1)::numeric - ((1.0 * (product_prices.sale_price)::numeric) / (product_prices.base_price)::numeric)) * (100)::numeric)))::integer) DESC
+   LIMIT 4;
+  SQL
 end

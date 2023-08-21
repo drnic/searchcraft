@@ -24,7 +24,7 @@ class ProductsController < ApplicationController
       .where(product_prices: {sale_price: [1..Float::INFINITY]}) # only products on sale
       .where(product_prices: {currency: @currency})
       .order("discount_percent DESC")
-      .limit(5)
+      .limit(4)
       .select(
         "products.*, " \
         "CAST(ROUND((1 - (1.0 * product_prices.sale_price / product_prices.base_price)) * 100) AS integer) AS discount_percent"
@@ -50,6 +50,8 @@ class ProductsController < ApplicationController
     @category = Category.find(category_id)
     @products = ProductSearch.within_category(@category).load
     @onsale_products = OnsaleSearch.all.load
+
+    render "product_searches/index"
   end
 
   def set_currency
