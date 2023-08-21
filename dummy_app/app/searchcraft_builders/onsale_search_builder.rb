@@ -9,6 +9,7 @@ class OnsaleSearchBuilder < SearchCraft::Builder
       .select(
         "products.id AS product_id, " \
         "products.name AS product_name, " \
+        "products.image_url AS image_url, " \
         "product_prices.base_price AS base_price, " \
         "product_prices.sale_price AS sale_price, " \
         "product_prices.sale_price AS price, " \

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_20_213800) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_21_222311) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -45,6 +45,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_20_213800) do
     t.boolean "active", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "image_url"
   end
 
   create_table "search_craft_view_hash_stores", id: :serial, force: :cascade do |t|
@@ -80,6 +81,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_20_213800) do
   create_view "onsale_searches", materialized: true, sql_definition: <<-SQL
       SELECT products.id AS product_id,
       products.name AS product_name,
+      products.image_url,
       product_prices.base_price,
       product_prices.sale_price,
       product_prices.sale_price AS price,

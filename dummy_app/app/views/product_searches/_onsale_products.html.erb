@@ -10,7 +10,11 @@
           <li class="inline-flex w-64 flex-col text-center lg:w-auto">
             <div class="group relative">
               <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200">
-                <img src="https://loremflickr.com/g/320/320/bag" class="h-full w-full object-cover object-center group-hover:opacity-75">
+                <% if product.image_url.presence %>
+                  <%= image_tag product.image_url, class: "h-full w-full object-cover object-center group-hover:opacity-75" %>
+                <% else %>
+                  <image src="https://placehold.co/300x300" class="h-full w-full object-cover object-center group-hover:opacity-75">
+                <% end %>
               </div>
               <div class="mt-6">
                 <% if false %>

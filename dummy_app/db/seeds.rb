@@ -6,8 +6,15 @@ Category.destroy_all
 
 puts "Creating #{num_products} products..."
 num_products.times do |i|
+  base_product_name = Faker::Commerce.product_name
+
+  # Use base_product_name last word as the primary category
+  primary_category = base_product_name.split.last.downcase
+  image_url = "https://loremflickr.com/g/320/320/#{primary_category}?lock=#{i + 1}"
+
   product = Product.create!(
-    name: Faker::Commerce.product_name,
+    name: base_product_name,
+    image_url: image_url,
     active: true
   )
 

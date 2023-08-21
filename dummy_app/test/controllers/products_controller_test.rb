@@ -33,7 +33,6 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
 
     product1 = products(:one)
     product2 = products(:two)
-    puts response.body
     assert_select "li#product_#{product1.id}"
     assert_select "li#product_#{product2.id}", count: 0
   end
