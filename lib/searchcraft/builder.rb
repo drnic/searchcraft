@@ -14,6 +14,8 @@ class SearchCraft::Builder
   class << self
     # Iterate through subclasses, and invoke recreate_view_if_changed!
     def rebuild_any_if_changed!
+      SearchCraft::ViewHashStore.setup_table_if_needed!
+
       # If tests, and after rails db:schema:load, the ViewHashStore table is empty.
       # So just drop any views created from the schema.rb and we'll recreate them.
       unless SearchCraft::ViewHashStore.any?

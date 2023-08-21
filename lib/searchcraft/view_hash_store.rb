@@ -37,8 +37,6 @@ class SearchCraft::ViewHashStore < ActiveRecord::Base
       view_hash_store&.destroy!
     end
 
-    private
-
     def setup_table_if_needed!
       return if table_exists?
 
