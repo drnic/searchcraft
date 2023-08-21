@@ -41,16 +41,11 @@
 
             <h4 class="sr-only">Available colors</h4>
             <ul role="list" class="mt-auto flex items-center justify-center space-x-3 pt-6">
-              <li class="h-4 w-4 rounded-full border border-black border-opacity-10" style="background-color:#111827">
-                <span class="sr-only">Black</span>
-              </li>
-              <li class="h-4 w-4 rounded-full border border-black border-opacity-10" style="background-color:#FDE68A">
-                <span class="sr-only">Brass</span>
-              </li>
-              <li class="h-4 w-4 rounded-full border border-black border-opacity-10" style="background-color:#E5E7EB">
-                <span class="sr-only">Chrome</span>
-              </li>
-
+              <% product.active_colors.sorted.each do |color| %>
+                <li class="<%= class_names("h-4 w-4 rounded-full border border-black border-opacity-10", color.css_class) %>">
+                  <span class="sr-only"><%= color.label %></span>
+                </li>
+              <% end %>
             </ul>
           </li>
         <% end %>

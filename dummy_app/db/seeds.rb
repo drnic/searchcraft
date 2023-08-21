@@ -1,8 +1,17 @@
 num_products = ENV.fetch("NUM_PRODUCTS", 500).to_i
 
+Color.destroy_all
 ProductCategory.destroy_all
 Product.destroy_all
 Category.destroy_all
+
+puts "Creating colors..."
+Color.create!(label: "Red", css_class: "bg-red-500")
+Color.create!(position: 2, label: "Gold", css_class: "bg-yellow-500")
+Color.create!(position: 3, label: "Silver", css_class: "bg-gray-500")
+Color.create!(position: 4, label: "Metallic Blue", css_class: "bg-blue-500")
+Color.create!(position: 5, label: "White", css_class: "bg-slate-500")
+colors = Color.all
 
 puts "Creating #{num_products} products..."
 num_products.times do |i|
@@ -26,6 +35,14 @@ num_products.times do |i|
   if rand(1..10) <= 3
     price.update!(
       sale_price: price.base_price * (1 - rand(100..800) / 1000.0)
+    )
+  end
+
+  # Give each product 1-5 colors
+  colors.order("RANDOM()").limit(rand(1..5)).each do |color|
+    product.product_colors.create!(
+      color: color,
+      active: true
     )
   end
 end

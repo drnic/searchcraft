@@ -5,7 +5,6 @@
 #  base_price    :integer
 #  category_name :string
 #  currency      :string
-#  number        :integer
 #  price         :integer
 #  product_name  :string
 #  sale_price    :integer

@@ -10,13 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_21_222311) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_21_225416) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "categories", force: :cascade do |t|
     t.string "name"
     t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "colors", force: :cascade do |t|
+    t.string "label", null: false
+    t.string "css_class", null: false
+    t.integer "position"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -28,6 +36,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_21_222311) do
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_product_categories_on_category_id"
     t.index ["product_id"], name: "index_product_categories_on_product_id"
+  end
+
+  create_table "product_colors", force: :cascade do |t|
+    t.bigint "product_id", null: false
+    t.bigint "color_id", null: false
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["color_id"], name: "index_product_colors_on_color_id"
+    t.index ["product_id"], name: "index_product_colors_on_product_id"
   end
 
   create_table "product_prices", force: :cascade do |t|
@@ -57,11 +75,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_21_222311) do
 
   add_foreign_key "product_categories", "categories"
   add_foreign_key "product_categories", "products"
+  add_foreign_key "product_colors", "colors"
+  add_foreign_key "product_colors", "products"
   add_foreign_key "product_prices", "products"
 
   create_view "product_searches", materialized: true, sql_definition: <<-SQL
-      SELECT 6 AS number,
-      products.id AS product_id,
+      SELECT products.id AS product_id,
       products.name AS product_name,
       categories.id AS category_id,
       categories.name AS category_name,

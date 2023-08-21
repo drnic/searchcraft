@@ -1,0 +1,19 @@
+# == Schema Information
+#
+# Table name: colors
+#
+#  id         :bigint           not null, primary key
+#  css_class  :string           not null
+#  label      :string           not null
+#  position   :integer
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+
+red:
+  label: Red
+  css_class: bg-red-500
+
+white:
+  label: White
+  css_class: bg-slate-50

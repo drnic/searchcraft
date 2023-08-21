@@ -5,6 +5,7 @@
 #  base_price       :integer
 #  currency         :string
 #  discount_percent :integer
+#  image_url        :string
 #  price            :integer
 #  product_name     :string
 #  sale_price       :integer
