@@ -23,6 +23,10 @@ class SearchCraft::ViewHashStore < ActiveRecord::Base
       setup_table_if_needed!
       view_sql_hash = builder.view_sql_hash
       view_hash_store = find_by(view_name: builder.view_name)
+      # puts "builder: #{builder.class.name}"
+      # puts "latest: #{view_sql_hash}"
+      # puts "stored: #{view_hash_store&.view_sql_hash}"
+      # puts "changed? #{view_hash_store.nil? || view_hash_store.view_sql_hash != view_sql_hash}"
       view_hash_store.nil? || view_hash_store.view_sql_hash != view_sql_hash
     end
 
@@ -39,6 +43,10 @@ class SearchCraft::ViewHashStore < ActiveRecord::Base
 
     def setup_table_if_needed!
       return if table_exists?
+
+      # TODO: store its own sha265 hash in a table,
+      # so we can detect if it changes during development
+      # and recreate table if table is empty -- just in case
 
       # Migrate table
       create_table_sql = <<~SQL

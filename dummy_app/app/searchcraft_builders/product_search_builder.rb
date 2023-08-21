@@ -6,7 +6,6 @@ class ProductSearchBuilder < SearchCraft::Builder
       .where(categories: {active: true}) # only active categories
       .order(:product_name)
       .select(
-        "6 as number, " \
         "products.id AS product_id, " \
         "products.name AS product_name, " \
         "categories.id AS category_id, " \

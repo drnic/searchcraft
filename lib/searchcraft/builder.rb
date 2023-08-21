@@ -16,16 +16,19 @@ class SearchCraft::Builder
     def rebuild_any_if_changed!
       SearchCraft::ViewHashStore.setup_table_if_needed!
 
+      builders = builders_to_rebuild
+
       # If tests, and after rails db:schema:load, the ViewHashStore table is empty.
       # So just drop any views created from the schema.rb and we'll recreate them.
+
       unless SearchCraft::ViewHashStore.any?
-        builders_to_rebuild.each { |builder| builder.new.drop_view! }
+        builders.each { |builder| builder.new.drop_view! }
       end
-      builders_to_rebuild.each { |builder| builder.new.recreate_view_if_changed! }
+      builders.each { |builder| builder.new.recreate_view_if_changed! }
     end
 
     def builders_to_rebuild
-      @builders_to_rebuild ||= if Object.const_defined?(:Rails) && Rails.application
+      if Object.const_defined?(:Rails) && Rails.application
         find_subclasses_via_rails_eager_load_paths.map(&:constantize)
       else
         subclasses
