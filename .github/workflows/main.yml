@@ -69,7 +69,7 @@ jobs:
 
     - name: Run tests
       env:
-        DATABASE_URL: postgres://postgres:password@localhost:5432/test
+        DATABASE_URL: postgres://postgres:password@localhost:5432/searchcraft_dummy_app_test
         RAILS_ENV: test
       run: |
         cd dummy_app
