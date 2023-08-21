@@ -10,3 +10,4 @@ require_relative "searchcraft/version"
 require_relative "searchcraft/builder"
 require_relative "searchcraft/model"
 require_relative "searchcraft/view_hash_store"
+require_relative "searchcraft/railtie" if defined?(Rails)

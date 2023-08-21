@@ -136,7 +136,7 @@ class ProductSearchBuilder < SearchCraft::Builder
   end
 end
 
-ProductSearchBuilder.new.recreate_view_if_changed!
+SearchCraft::Builder.rebuild_any_if_changed!
 puts "\nViewHashStore now contains:"
 pp SearchCraft::ViewHashStore.all
 
@@ -172,7 +172,7 @@ end
 
 # TODO: include index SQL in view_sql_hash
 SearchCraft::ViewHashStore.destroy_all
-ProductSearchBuilder.new.recreate_view_if_changed!
+SearchCraft::Builder.rebuild_any_if_changed!
 puts "\nViewHashStore now contains:"
 pp SearchCraft::ViewHashStore.all
 
@@ -201,7 +201,7 @@ class ProductSearchBuilder < SearchCraft::Builder
 end
 
 # Manually drop + create the materialized view
-ProductSearchBuilder.new.recreate_view_if_changed!
+SearchCraft::Builder.rebuild_any_if_changed!
 puts "\nViewHashStore now contains:"
 pp SearchCraft::ViewHashStore.all
 

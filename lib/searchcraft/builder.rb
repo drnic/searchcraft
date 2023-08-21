@@ -11,6 +11,42 @@ class SearchCraft::Builder
     view_scope.to_sql
   end
 
+  class << self
+    # Iterate through subclasses, and invoke recreate_view_if_changed!
+    def rebuild_any_if_changed!
+      builders_to_rebuild.each do |builder|
+        builder.new.recreate_view_if_changed!
+      end
+    end
+
+    def builders_to_rebuild
+      if Object.const_defined?(:Rails) && Rails.application
+        find_subclasses_via_rails_eager_load_paths.map(&:constantize)
+      else
+        subclasses
+      end
+    end
+
+    def find_subclasses_via_rails_eager_load_paths
+      @subclass_names = []
+
+      Rails.configuration.eager_load_paths.each do |load_path|
+        Dir.glob("#{load_path}/**/*.rb").each do |file|
+          # TODO: namespaced classes - might need to load the file, and see what was created?
+          # Or assume the class name by its file path?
+          File.readlines(file).each do |line|
+            if (match = line.match(/class\s+(\w+)\s*<\s*SearchCraft::Builder/))
+              class_name = match[1]
+              @subclass_names << class_name
+            end
+          end
+        end
+      end
+
+      @subclass_names
+    end
+  end
+
   # Produces the SQL that will create the materialized view
   def view_sql
     # remove trailing ; from view_sql
