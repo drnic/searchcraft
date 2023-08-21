@@ -1,4 +1,9 @@
 class SearchCraft::Builder
+  # Subclass must implement view_scope or view_select_sql
+  def view_scope
+    raise NotImplementedError, "Subclass must implement view_scope or view_select_sql"
+  end
+
   # By default, assumes subclass implements view_scope to return
   # an ActiveRecord::Relation.
   # Alternately, override view_select_sql to return a SQL string.
@@ -6,17 +11,20 @@ class SearchCraft::Builder
     view_scope.to_sql
   end
 
+  # Produces the SQL that will create the materialized view
   def view_sql
     # remove trailing ; from view_sql
     inner_sql = view_select_sql.gsub(/;\s*$/, "")
     "CREATE MATERIALIZED VIEW #{view_name} AS (#{inner_sql}) WITH DATA;"
   end
 
-  # After materialized view created, what indexes should be added?
+  # After materialized view created, do you need indexes on its columns?
   def view_indexes
     {}
   end
 
+  # To indicate if view has changed, we store a hash of the SQL used to create it
+  # TODO: include the indexes SQL too
   def view_sql_hash
     Digest::SHA256.hexdigest(view_sql)
   end
