@@ -4,6 +4,7 @@ Color.destroy_all
 ProductCategory.destroy_all
 Product.destroy_all
 Category.destroy_all
+Customer.destroy_all
 
 puts "Creating colors..."
 Color.create!(label: "Red", css_class: "bg-red-500")
@@ -70,3 +71,35 @@ Product.all.each do |product|
   end
 end
 puts "Created #{ProductCategory.count} product categories."
+
+puts "Creating customers..."
+Customer.create!(name: "John Doe")
+Customer.create!(name: "Jane Doe")
+Customer.create!(name: "Bob Smith")
+Customer.create!(name: "Jeff Jones")
+
+puts "Creating bad product reviews for a week ago..."
+Product.all.each do |product|
+  Customer.order("RANDOM()").limit(rand(1..4)).each do |customer|
+    product.product_reviews.create!(
+      customer: customer,
+      rating: rand(1..2),
+      comment: Faker::Lorem.paragraph,
+      created_at: 7.days.ago
+    )
+  end
+end
+puts "Creating good product reviews for today..."
+Product.all.each do |product|
+  Customer.order("RANDOM()").limit(rand(1..4)).each do |customer|
+    product.product_reviews.create!(
+      customer: customer,
+      rating: rand(4..5),
+      comment: Faker::Lorem.paragraph
+    )
+  end
+end
+
+puts "Created #{ProductReview.count} product reviews."
+products_with_multiple_reviews_per_customer = Product.joins(:product_reviews).group("products.id", "product_reviews.customer_id").having("count(*) > 1").count.keys
+puts "Created #{products_with_multiple_reviews_per_customer.count} products with multiple reviews per customer."
