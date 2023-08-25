@@ -23,9 +23,10 @@ describe SearchCraft::Builder do
     # Database name
     database_name = "searchcraft_gem_builder_test"
 
-    if ActiveRecord::Base.connection.execute("SELECT 1 FROM pg_database WHERE datname = '#{database_name}'").any?
+    begin
       ActiveRecord::Base.connection.drop_database(database_name)
       puts "Dropped existing database '#{database_name}'"
+    rescue ActiveRecord::NoDatabaseError
     end
 
     at_exit do

@@ -37,7 +37,7 @@ jobs:
     - name: Run tests
       run: bundle exec rake test
       env:
-        DATABASE_URL: postgres://postgres:password@localhost:5432/test
+        DATABASE_URL: postgres://postgres:password@localhost:5432
 
   test_demo_app:
     runs-on: ubuntu-latest
