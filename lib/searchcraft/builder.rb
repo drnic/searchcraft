@@ -11,20 +11,55 @@ class SearchCraft::Builder
     view_scope.to_sql
   end
 
+  @@dependencies = {}
+
   class << self
+    def depends_on(*builder_names)
+      @@dependencies[name] = builder_names
+    end
+
+    def sort_builders_by_dependency
+      sorted = []
+      visited = {}
+
+      builders_to_rebuild.each do |builder|
+        visit(builder, visited, sorted)
+      end
+
+      sorted
+    end
+
+    def visit(builder, visited, sorted)
+      return if visited[builder.name]
+
+      dependency_names = @@dependencies[builder.name] || []
+      dependency_names.each do |dependency_name|
+        dependency = Object.const_get(dependency_name)
+        visit(dependency, visited, sorted)
+      end
+
+      visited[builder.name] = true
+      sorted << builder
+    end
+
     # Iterate through subclasses, and invoke recreate_view_if_changed!
     def rebuild_any_if_changed!
       SearchCraft::ViewHashStore.setup_table_if_needed!
 
-      builders = builders_to_rebuild
+      sorted_builders = sort_builders_by_dependency
 
       # If tests, and after rails db:schema:load, the ViewHashStore table is empty.
       # So just drop any views created from the schema.rb and we'll recreate them.
 
       unless SearchCraft::ViewHashStore.any?
-        builders.each { |builder| builder.new.drop_view! }
+        sorted_builders.each { |builder| builder.new.drop_view! }
       end
-      builders.each { |builder| builder.new.recreate_view_if_changed! }
+
+      builders_changed = []
+      sorted_builders.each do |builder|
+        changed = builder.new.recreate_view_if_changed!(builders_changed: builders_changed)
+        builders_changed << builder if changed
+      end
     end
 
     def builders_to_rebuild
@@ -75,13 +110,19 @@ class SearchCraft::Builder
 
   # If missing or changed, drop and create view
   # Returns false if no change required
-  def recreate_view_if_changed!
-    if SearchCraft::ViewHashStore.changed?(builder: self)
-      warn "Recreating #{view_name} because SQL changed" if SearchCraft::ViewHashStore.exists?(builder: self)
+  def recreate_view_if_changed!(builders_changed: [])
+    dependency_changed = (@@dependencies[self.class.name] || []) & builders_changed.map(&:name)
+    if dependency_changed.any? || SearchCraft::ViewHashStore.changed?(builder: self)
+      if dependency_changed.any?
+        warn "Recreating #{view_name} because #{dependency_changed.join(" ")} changed"
+      elsif SearchCraft::ViewHashStore.exists?(builder: self)
+        warn "Recreating #{view_name} because SQL changed"
+      end
       drop_view!
       create_view!
       # dump_schema!
       SearchCraft::ViewHashStore.update_for(builder: self)
+      true
     else
       false
     end
