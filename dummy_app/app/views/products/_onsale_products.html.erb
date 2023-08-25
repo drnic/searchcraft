@@ -14,49 +14,51 @@
                   <%= image_tag product.image_url, class: "h-full w-full object-cover object-center group-hover:opacity-75" %>
                 <% else %>
                   <image src="https://placehold.co/300x300" class="h-full w-full object-cover object-center group-hover:opacity-75">
-                <% end %>
-              </div>
-              <div class="mt-6">
-                <% if false %>
-                  <p class="text-sm text-gray-500">Black</p>
-                <% end %>
-                <h3 class="mt-1 font-semibold text-gray-900">
-                  <a href="#">
-                    <span class="absolute inset-0"></span>
-                    <%= product.name %>
-                  </a>
-                </h3>
-                <% price = product.product_prices.find_by(currency: @currency) %>
-                <p class="mt-1 text-gray-900">
-                  <%= number_to_currency(price.base_price / 100.0) %>
-                  <% if price.sale_price %>
-                    <span class="text-red-500">
-                      SALE
-                      <%= number_to_currency(price.sale_price / 100.0) %>
-                    </span>
                   <% end %>
-                </p>
+                </div>
+                <div class="mt-6">
+                  <% if false %>
+                    <p class="text-sm text-gray-500">Black</p>
+                  <% end %>
+                  <h3 class="mt-1 font-semibold text-gray-900">
+                    <a href="#">
+                      <span class="absolute inset-0"></span>
+                      <%= product.name %>
+                    </a>
+                  </h3>
+                  <% price = product.product_prices.find_by(currency: @currency) %>
+                  <p class="mt-1 text-gray-900">
+                    <%= number_to_currency(price.base_price / 100.0) %>
+                    <% if price.sale_price %>
+                      <span class="text-red-500">
+                        SALE
+                        <%= number_to_currency(price.sale_price / 100.0) %>
+                      </span>
+                    <% end %>
+                  </p>
+                </div>
+                <p><%= product.product_reviews.count %> total reviews by
+                  <%= product.customers.distinct.count %> customers</p>
               </div>
-            </div>
 
-            <h4 class="sr-only">Available colors</h4>
-            <ul role="list" class="mt-auto flex items-center justify-center space-x-3 pt-6">
-              <% product.active_colors.sorted.each do |color| %>
-                <li class="<%= class_names("h-4 w-4 rounded-full border border-black border-opacity-10", color.css_class) %>">
-                  <span class="sr-only"><%= color.label %></span>
-                </li>
-              <% end %>
-            </ul>
-          </li>
-        <% end %>
-      </ul>
+              <h4 class="sr-only">Available colors</h4>
+              <ul role="list" class="mt-auto flex items-center justify-center space-x-3 pt-6">
+                <% product.active_colors.sorted.each do |color| %>
+                  <li class="<%= class_names("h-4 w-4 rounded-full border border-black border-opacity-10", color.css_class) %>">
+                    <span class="sr-only"><%= color.label %></span>
+                  </li>
+                <% end %>
+              </ul>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-12 px-4 sm:hidden">
+      <a href="#" class="text-sm font-semibold text-indigo-600 hover:text-indigo-500">
+        See everything
+        <span aria-hidden="true"> →</span>
+      </a>
     </div>
   </div>
-
-  <div class="mt-12 px-4 sm:hidden">
-    <a href="#" class="text-sm font-semibold text-indigo-600 hover:text-indigo-500">
-      See everything
-      <span aria-hidden="true"> →</span>
-    </a>
-  </div>
-</div>
