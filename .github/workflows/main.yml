@@ -22,7 +22,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
-          POSTGRES_DB: searchcraft_dummy_app_test
+          POSTGRES_DB: searchcraft_demo_app_test
         ports:
           - 5432:5432
 
@@ -39,7 +39,7 @@ jobs:
       env:
         DATABASE_URL: postgres://postgres:password@localhost:5432/test
 
-  test_dummy_app:
+  test_demo_app:
     runs-on: ubuntu-latest
     name: Rails App ${{ matrix.ruby }}
     strategy:
@@ -53,7 +53,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
-          POSTGRES_DB: searchcraft_dummy_app_test
+          POSTGRES_DB: searchcraft_demo_app_test
         ports:
           - 5432:5432
 
@@ -65,14 +65,14 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
-        working-directory: dummy_app
+        working-directory: demo_app
 
     - name: Run tests
       env:
-        DATABASE_URL: postgres://postgres:password@localhost:5432/searchcraft_dummy_app_test
+        DATABASE_URL: postgres://postgres:password@localhost:5432/searchcraft_demo_app_test
         RAILS_ENV: test
       run: |
-        cd dummy_app
+        cd demo_app
         bin/rails test:prepare
         bin/rails db:test:prepare
         bin/rails test
