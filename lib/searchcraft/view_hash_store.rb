@@ -36,7 +36,6 @@ class SearchCraft::ViewHashStore < ActiveRecord::Base
     end
 
     def reset!(builder:)
-      setup_table_if_needed!
       view_hash_store = find_by(view_name: builder.view_name)
       view_hash_store&.destroy!
     end

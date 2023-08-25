@@ -104,6 +104,8 @@ class SearchCraft::Builder
     ActiveRecord::Base.connection.execute("DROP MATERIALIZED VIEW IF EXISTS #{view_name} CASCADE;")
 
     ActiveRecord::Base.connection.execute("DROP SEQUENCE IF EXISTS #{view_id_sequence_name};")
+
+    SearchCraft::ViewHashStore.reset!(builder: self)
   end
 
   # Pluralized table name of class

@@ -7,7 +7,7 @@
     <div class="relative w-full overflow-x-auto">
       <ul role="list" class="mx-4 inline-flex space-x-8 sm:mx-6 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-x-8 lg:space-x-0">
         <% @onsale_products.each do |product| %>
-          <li class="inline-flex w-64 flex-col text-center lg:w-auto">
+          <li data-product-id="<%= product.product_id %>" class="inline-flex w-64 flex-col text-center lg:w-auto">
             <div class="group relative">
               <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200">
                 <% if product.image_url.presence %>
@@ -37,6 +37,8 @@
                   </p>
                 </div>
                 <p><%= product.reviews_count %> total reviews by <%= product.customer_reviews_count %> customers</p>
+                <p><%= number_with_precision product.average_review_for_latest, precision: 1 %> avg rating for customers' recent review</p>
+                <p><%= number_with_precision product.reviews_average, precision: 1 %> avg rating for all reviews</p>
               </div>
             </li>
           <% end %>
