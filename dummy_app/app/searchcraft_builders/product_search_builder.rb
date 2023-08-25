@@ -27,6 +27,9 @@ class ProductSearchBuilder < SearchCraft::Builder
       )
   end
 
+  # TODO: implement .add_index instead of #view_indexes below
+  add_index :category_id, ["category_id"] # name: idx_product_searches_category_id
+
   def view_indexes
     {
       # index_name: {columns: ["column1", "column2"], unique: false}

@@ -18,6 +18,13 @@ class SearchCraft::Builder
       @@dependencies[name] = builder_names
     end
 
+    # TODO: implement .add_index instead of #view_indexes below
+    def add_index(index_name, columns, unique: false, name: nil)
+      @indexes ||= {}
+      # TODO: also get indexes from @@dependencies[name]
+      @indexes[index_name] = {columns: columns, unique: unique, name: name}
+    end
+
     def sort_builders_by_dependency
       sorted = []
       visited = {}
