@@ -41,14 +41,16 @@ class ProductsController < ApplicationController
 
     @products = ProductSearch.all
 
-    unless (category_id = params.delete(:category_id))
-      # get first category and redirect to filter by it
-      category_id = @categories.first.id
-      return redirect_to root_url(searchcraft: true, category_id: category_id)
+    if (category_id = params.delete(:category_id))
+      if (@category = Category.find_by(id: category_id))
+        @products = @products.within_category(@category)
+      else
+        redirect_to root_url(searchcraft: true)
+        return
+      end
     end
 
-    @category = Category.find(category_id)
-    @products = ProductSearch.within_category(@category).load
+    @products.load
     @onsale_products = OnsaleSearch.all.load
 
     render "product_searches/index"
