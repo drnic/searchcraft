@@ -2,14 +2,20 @@
 #
 # Table name: product_searches
 #
-#  base_price    :integer
-#  category_name :string
-#  currency      :string
-#  price         :integer
-#  product_name  :string
-#  sale_price    :integer
-#  category_id   :bigint
-#  product_id    :bigint
+#  average_review_for_latest :decimal(, )
+#  base_price                :integer
+#  category_name             :string
+#  currency                  :string
+#  customer_reviews_count    :bigint
+#  number_review_for_latest  :bigint
+#  price                     :integer
+#  product_name              :string
+#  reviews_average           :decimal(, )
+#  reviews_count             :bigint
+#  sale_price                :integer
+#  total_review_for_latest   :bigint
+#  category_id               :bigint
+#  product_id                :bigint
 #
 # Indexes
 #

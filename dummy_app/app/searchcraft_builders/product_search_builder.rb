@@ -8,6 +8,7 @@ class ProductSearchBuilder < SearchCraft::Builder
       .select(
         "products.id AS product_id, " \
         "products.name AS product_name, " \
+        "products.image_url AS image_url, " \
         "categories.id AS category_id, " \
         "categories.name AS category_name", \
         "product_prices.base_price AS base_price, " \

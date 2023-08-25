@@ -29,4 +29,18 @@ class OnsaleSearchBuilder < SearchCraft::Builder
         "(SELECT ARRAY_AGG(latest_reviews.customer_id) FROM (SELECT DISTINCT ON (customer_id) customer_id FROM product_reviews WHERE product_reviews.product_id = products.id ORDER BY customer_id, created_at DESC) AS latest_reviews) AS latest_reviews_customer_ids"
       )
   end
+
+  # TODO: Use this scope to build the view based on ProductSearch MV
+  # but we need to tell Builder.rebuild_any_if_changed! which order
+  # to drop + recreate the MVs
+  def proposed_view_scope
+    product_search_table = ProductSearch.arel_table
+    ProductSearch
+      .where(sale_price: [1..Float::INFINITY]) # only products on sale
+      .order("discount_percent DESC")
+      .select(
+        product_search_table[Arel.star],
+        "CAST(ROUND((1 - (1.0 * #{product_search_table.name}.sale_price / #{product_search_table.name}.base_price)) * 100) AS integer) AS discount_percent"
+      )
+  end
 end
