@@ -2,15 +2,26 @@
 
 require "test_helper"
 
-# create ParentBuilder as subclass of ParentBuilder
-class ParentBuilder < SearchCraft::Builder
+class NumberBuilder < SearchCraft::Builder
   def view_select_sql
     # Write SQL that produces 5 rows, with a 'number' column containing the number of the row
     "SELECT generate_series(1, 5) AS number;"
   end
 end
 
-class Parent < ActiveRecord::Base
+class Number < ActiveRecord::Base
+  include SearchCraft::Model
+end
+
+class SquaredBuilder < SearchCraft::Builder
+  depends_on "NumberBuilder"
+
+  def view_select_sql
+    "SELECT number, number * number AS squared FROM numbers;"
+  end
+end
+
+class Squared < ActiveRecord::Base
   include SearchCraft::Model
 end
 
@@ -43,6 +54,9 @@ describe SearchCraft::Builder do
 
     SearchCraft::Builder.rebuild_any_if_changed!
 
-    assert_equal [1, 2, 3, 4, 5], Parent.pluck(:number)
+    assert_equal [1, 2, 3, 4, 5], Number.pluck(:number)
+
+    assert_equal [1, 2, 3, 4, 5], Squared.pluck(:number)
+    assert_equal [1, 4, 9, 16, 25], Squared.pluck(:squared)
   end
 end
