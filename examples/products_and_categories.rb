@@ -123,9 +123,9 @@ class ProductSearchBuilder < SearchCraft::Builder
       .where(categories: {active: true}) # only active categories
       .order(:product_name)
       .select(
-        "products.id AS product_id, " \
-        "products.name AS product_name, " \
-        "categories.id AS category_id, " \
+        "products.id AS product_id",
+        "products.name AS product_name",
+        "categories.id AS category_id",
         "categories.name AS category_name"
         # Or could use Arel:
         # Product.arel_table[:id].as("product_id"),
