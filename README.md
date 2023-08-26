@@ -1,4 +1,4 @@
-![searchcraft-logo](docs/searchcraft-logo-on-white.png)
+![searchcraft-logo](docs/searchcraft-logo.svg)
 
 "Instant Search for Rails and ActiveRecord using SQL materialized views."
 
