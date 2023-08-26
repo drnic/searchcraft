@@ -4,6 +4,7 @@ module SearchCraft::Annotate
   included do
     # If using annotate gem, then automatically annotate models after rebuilding views
     def annotate_models!
+      return unless Rails.env.development?
       return unless Object.const_defined?(:Annotate)
 
       options = {
@@ -17,9 +18,10 @@ module SearchCraft::Annotate
         exclude_helpers: true,
         hide_limit_column_types: "",
         hide_default_column_types: "",
-        ignore_unknown_models: false
+        ignore_unknown_models: true
       }
       AnnotateModels.do_annotations(options)
+    rescue PG::UndefinedTable
     rescue => e
       puts "Error annotating models: #{e.message}"
       pp e.backtrace

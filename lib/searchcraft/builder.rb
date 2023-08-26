@@ -1,6 +1,7 @@
 class SearchCraft::Builder
   include SearchCraft::Annotate
   include SearchCraft::DependsOn
+  include SearchCraft::DumpSchema
 
   # Subclass must implement view_scope or view_select_sql
   def view_scope
@@ -93,8 +94,8 @@ class SearchCraft::Builder
       end
       drop_view!
       create_view!
-      # dump_schema!
       SearchCraft::ViewHashStore.update_for(builder: self)
+      dump_schema!
       annotate_models!
       true
     else

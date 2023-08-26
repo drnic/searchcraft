@@ -99,7 +99,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_25_004026) do
   add_foreign_key "product_reviews", "products"
 
   create_view "product_searches", materialized: true, sql_definition: <<-SQL
-      SELECT 6 AS number,
+      SELECT 1 AS number,
       products.id AS product_id,
       products.name AS product_name,
       products.image_url,
@@ -135,5 +135,26 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_25_004026) do
        JOIN product_prices ON ((product_prices.product_id = products.id)))
     WHERE (products.active = true)
     ORDER BY products.name;
+  SQL
+  create_view "onsale_searches", materialized: true, sql_definition: <<-SQL
+      SELECT product_searches.number,
+      product_searches.product_id,
+      product_searches.product_name,
+      product_searches.image_url,
+      product_searches.base_price,
+      product_searches.sale_price,
+      product_searches.currency,
+      product_searches.price,
+      product_searches.reviews_count,
+      product_searches.reviews_average,
+      product_searches.customer_reviews_count,
+      product_searches.average_review_for_latest,
+      product_searches.total_review_for_latest,
+      product_searches.number_review_for_latest,
+      (round((((1)::numeric - ((1.0 * (product_searches.sale_price)::numeric) / (product_searches.base_price)::numeric)) * (100)::numeric)))::integer AS discount_percent
+     FROM product_searches
+    WHERE (product_searches.sale_price >= 1)
+    ORDER BY ((round((((1)::numeric - ((1.0 * (product_searches.sale_price)::numeric) / (product_searches.base_price)::numeric)) * (100)::numeric)))::integer) DESC
+   LIMIT 4;
   SQL
 end
