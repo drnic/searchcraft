@@ -144,9 +144,11 @@ bundle add searchcraft
 
 SearchCraft will automatically create an internal DB table that it needs, so there's no database migration to run. And of course, it will automatically create and recreate your materialized views.
 
-## Usage
+## Learning SearchCraft
 
-TODO: Write usage instructions here
+1. Re-read the introduction above.
+2. Read and run the examples in the [examples/](examples/) folder.
+3. Look at the Rails app in the [demo_app](demo_app/) folder. It contains models, SearchCraft builders, unit tests, and system tests.
 
 ## Development
 
