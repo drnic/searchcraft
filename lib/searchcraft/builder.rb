@@ -1,4 +1,6 @@
 class SearchCraft::Builder
+  include SearchCraft::Annotate
+
   # Subclass must implement view_scope or view_select_sql
   def view_scope
     raise NotImplementedError, "Subclass must implement view_scope or view_select_sql"
@@ -129,6 +131,7 @@ class SearchCraft::Builder
       create_view!
       # dump_schema!
       SearchCraft::ViewHashStore.update_for(builder: self)
+      annotate_models!
       true
     else
       false
