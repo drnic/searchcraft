@@ -17,11 +17,24 @@ class SquaredBuilder < SearchCraft::Builder
   depends_on "NumberBuilder"
 
   def view_select_sql
-    "SELECT number, number * number AS squared FROM numbers;"
+    "SELECT number, number * number AS squared FROM #{Number.table_name};"
   end
 end
 
 class Squared < ActiveRecord::Base
+  include SearchCraft::Model
+end
+
+# Weird implementation of Cubed just to depend on two builders
+class CubedBuilder < SearchCraft::Builder
+  depends_on "SquaredBuilder"
+
+  def view_select_sql
+    "SELECT number, squared, number * squared AS cubed FROM #{Squared.table_name};"
+  end
+end
+
+class Cubed < ActiveRecord::Base
   include SearchCraft::Model
 end
 
@@ -58,5 +71,7 @@ describe SearchCraft::Builder do
 
     assert_equal [1, 2, 3, 4, 5], Squared.pluck(:number)
     assert_equal [1, 4, 9, 16, 25], Squared.pluck(:squared)
+
+    assert_equal [1, 2, 3, 4, 5].map { |n| n * n * n }, Cubed.pluck(:cubed)
   end
 end
