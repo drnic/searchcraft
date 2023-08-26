@@ -45,8 +45,6 @@ Update your SearchCraft view, run your tests, they work. Update your SearchCraft
 
 What does it look like to design a materialized view with SearchCraft? For our `ProductSearch` model above, we create a `ProductSearchBuilder` class that inherits from `SearchCraft::Builder` and provides either a `view_scope` method or `view_select_sql` method.
 
-
-
 ```ruby
 class ProductSearchBuilder < SearchCraft::Builder
   def view_scope
@@ -65,7 +63,7 @@ The `view_scope` method must return an ActiveRecord relation. It can be as simpl
 
 * filter out inactive products
 * select the `id` and `name` columns from the `products` table; where we can later use `product_id` as a foreign key for joins to the `Product` model in our app
-* build new `reviews_count` and `reviews_average` columns using SQL subqueries that counts and averages the `rating` column from the `product_reviews` table
+* build new `reviews_count` and `reviews_average` columns using SQL subqueries that counts and averages the `rating` column from the `product_reviews` table.
 
 SearchCraft will convert this into a materialized view, create it into your database, and the `ProductSearch` model above will start using it when you next reload your development app or run your tests. If you make a change, SearchCraft will drop and recreate the view automatically.
 
@@ -83,9 +81,42 @@ ProductSearch.order(reviews_average: :desc)
    #<ProductSearch:0x0000000105d91100 id: 3, product_id: 4, product_name: "Monopoly", reviews_count: 3, reviews_average: 0.2e1>]
 ```
 
+If you want to write SQL, then you can use the `view_select_sql` method instead.
+
+```ruby
+class NumberBuilder < SearchCraft::Builder
+  # Write SQL that produces 5 rows, with a 'number' column containing the number of the row
+  def view_select_sql
+    "SELECT generate_series(1, 5) AS number;"
+  end
+end
+
+class Number < ActiveRecord::Base
+  include SearchCraft::Model
+end
+```
+
 Aren't confident writing complex SQL or Arel expressions? Me either. I ask GPT4 or GitHub Copilot. I explain the nature of my schema and tables, and ask it to write some SQL, and then ask to convert it into Arel. Or I give it a small snippet it of SQL, and ask it to convert it into Arel. I then copy/paste the results into my SearchCraft builder class.
 
-It's absolutely worth learning to express your search queries in SQL or Arel, and putting them into a SearchCraft materialized view. Your users will have a lightning fast experience.
+It is absolutely worth learning to express your search queries in SQL or Arel, and putting them into a SearchCraft materialized view. Your users will have a lightning fast experience.
+
+Once you have one SearchCraft materialized view, you might want to create another that depends upon it. You can do this too with the `depends_on` method.
+
+```ruby
+class SquaredBuilder < SearchCraft::Builder
+  depends_on "NumberBuilder"
+
+  def view_select_sql
+    "SELECT number, number * number AS squared FROM #{Number.table_name};"
+  end
+end
+
+class Squared < ActiveRecord::Base
+  include SearchCraft::Model
+end
+```
+
+If you make a change to `NumberBuilder`, then SearchCraft will automatically drop and recreate both the `Number` and `Squared` materialized views.
 
 * A future version of SearchCraft might implement a similar feature for MySQL by creating simple views and caching the results in tables.
 
