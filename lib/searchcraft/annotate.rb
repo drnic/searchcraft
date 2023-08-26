@@ -1,9 +1,11 @@
 module SearchCraft::Annotate
-  include ActiveSupport::Concern
+  extend ActiveSupport::Concern
 
-  def annotate_models!
-    return unless Object.const_defined?(:Annotate)
-    Annotate.load_tasks unless Rake::Task[:annotate_models]
-    Rake::Task[:annotate_models].invoke
+  included do
+    def annotate_models!
+      return unless Object.const_defined?(:Annotate)
+      Annotate.load_tasks unless Rake::Task[:annotate_models]
+      Rake::Task[:annotate_models].invoke
+    end
   end
 end
