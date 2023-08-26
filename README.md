@@ -30,9 +30,9 @@ If the underlying view had columns `product_id`, `product_name`, `reviews_count`
 
 ```ruby
 ProductSearch.all
-[#<ProductSearch:0x00000001041a2598 id: 1, product_id: 2, product_name: "iPhone 15", reviews_count: 5, reviews_average: 0.38e1>,
- #<ProductSearch:0x0000000104126060 id: 2, product_id: 1, product_name: "Laptop 3", reviews_count: 5, reviews_average: 0.28e1>,
- #<ProductSearch:0x0000000104125840 id: 3, product_id: 4, product_name: "Monopoly", reviews_count: 3, reviews_average: 0.2e1>]
+[#<ProductSearch product_id: 2, product_name: "iPhone 15", reviews_count: 5, reviews_average: 0.38e1>,
+ #<ProductSearch product_id: 1, product_name: "Laptop 3", reviews_count: 5, reviews_average: 0.28e1>,
+ #<ProductSearch product_id: 4, product_name: "Monopoly", reviews_count: 3, reviews_average: 0.2e1>]
 ```
 
 You can pass this ActiveRecord relation/array to your Rails views and render them. You can join it to other tables and apply further scopes.
@@ -71,14 +71,14 @@ When we load up our app into Rails console, or run our tests, or refresh the dev
 
 ```ruby
 ProductSearch.all
-  [#<ProductSearch:0x00000001041a2598 id: 1, product_id: 2, product_name: "iPhone 15", reviews_count: 5, reviews_average: 0.38e1>,
-   #<ProductSearch:0x0000000104126060 id: 2, product_id: 1, product_name: "Laptop 3", reviews_count: 5, reviews_average: 0.28e1>,
-   #<ProductSearch:0x0000000104125840 id: 3, product_id: 4, product_name: "Monopoly", reviews_count: 3, reviews_average: 0.2e1>]
+  [#<ProductSearch product_id: 2, product_name: "iPhone 15", reviews_count: 5, reviews_average: 0.38e1>,
+   #<ProductSearch product_id: 1, product_name: "Laptop 3", reviews_count: 5, reviews_average: 0.28e1>,
+   #<ProductSearch product_id: 4, product_name: "Monopoly", reviews_count: 3, reviews_average: 0.2e1>]
 
 ProductSearch.order(reviews_average: :desc)
-  [#<ProductSearch:0x0000000105d91380 id: 1, product_id: 2, product_name: "iPhone 15", reviews_count: 5, reviews_average: 0.38e1>,
-   #<ProductSearch:0x0000000105d911a0 id: 2, product_id: 1, product_name: "Laptop 3", reviews_count: 5, reviews_average: 0.28e1>,
-   #<ProductSearch:0x0000000105d91100 id: 3, product_id: 4, product_name: "Monopoly", reviews_count: 3, reviews_average: 0.2e1>]
+  [#<ProductSearch product_id: 2, product_name: "iPhone 15", reviews_count: 5, reviews_average: 0.38e1>,
+   #<ProductSearch product_id: 1, product_name: "Laptop 3", reviews_count: 5, reviews_average: 0.28e1>,
+   #<ProductSearch product_id: 4, product_name: "Monopoly", reviews_count: 3, reviews_average: 0.2e1>]
 ```
 
 If you want to write SQL, then you can use the `view_select_sql` method instead.
@@ -94,6 +94,11 @@ end
 class Number < ActiveRecord::Base
   include SearchCraft::Model
 end
+```
+
+```ruby
+Number.all
+[#<Number number: 1>, #<Number number: 2>, #<Number number: 3>, #<Number number: 4>, #<Number number: 5>]
 ```
 
 Aren't confident writing complex SQL or Arel expressions? Me either. I ask GPT4 or GitHub Copilot. I explain the nature of my schema and tables, and ask it to write some SQL, and then ask to convert it into Arel. Or I give it a small snippet it of SQL, and ask it to convert it into Arel. I then copy/paste the results into my SearchCraft builder class.
@@ -117,6 +122,15 @@ end
 ```
 
 If you make a change to `NumberBuilder`, then SearchCraft will automatically drop and recreate both the `Number` and `Squared` materialized views.
+
+```ruby
+Squared.all
+[#<Squared number: 1, squared: 1>,
+ #<Squared number: 2, squared: 4>,
+ #<Squared number: 3, squared: 9>,
+ #<Squared number: 4, squared: 16>,
+ #<Squared number: 5, squared: 25>]
+```
 
 * A future version of SearchCraft might implement a similar feature for MySQL by creating simple views and caching the results in tables.
 
