@@ -6,10 +6,23 @@ module SearchCraft::Annotate
     def annotate_models!
       return unless Object.const_defined?(:Annotate)
 
-      require "rake/task" unless Object.const_defined?("Rake::Task")
-      Annotate.load_tasks unless Rake::Task[:annotate_models]
-
-      Rake::Task[:annotate_models].invoke
+      options = {
+        is_rake: true,
+        position: "before",
+        additional_file_patterns: [],
+        model_dir: "app/models",
+        root_dir: Rails.root.to_s,
+        require: [],
+        exclude_controllers: true,
+        exclude_helpers: true,
+        hide_limit_column_types: "",
+        hide_default_column_types: "",
+        ignore_unknown_models: false
+      }
+      AnnotateModels.do_annotations(options)
+    rescue => e
+      puts "Error annotating models: #{e.message}"
+      pp e.backtrace
     end
   end
 end
