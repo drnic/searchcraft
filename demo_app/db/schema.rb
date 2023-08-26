@@ -99,36 +99,41 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_25_004026) do
   add_foreign_key "product_reviews", "products"
 
   create_view "product_searches", materialized: true, sql_definition: <<-SQL
-      SELECT products.id AS product_id,
-      products.name AS product_name,
-      categories.id AS category_id,
-      categories.name AS category_name,
-      product_prices.base_price,
-      product_prices.sale_price,
-      product_prices.currency,
-      COALESCE(product_prices.sale_price, product_prices.base_price) AS price
-     FROM (((products
-       JOIN product_categories ON ((product_categories.product_id = products.id)))
-       JOIN categories ON ((categories.id = product_categories.category_id)))
-       JOIN product_prices ON ((product_prices.product_id = products.id)))
-    WHERE ((products.active = true) AND (categories.active = true))
-    ORDER BY products.name;
-  SQL
-  add_index "product_searches", ["category_id"], name: "idx_product_searches_category_id"
-
-  create_view "onsale_searches", materialized: true, sql_definition: <<-SQL
-      SELECT products.id AS product_id,
+      SELECT 6 AS number,
+      products.id AS product_id,
       products.name AS product_name,
       products.image_url,
       product_prices.base_price,
       product_prices.sale_price,
-      product_prices.sale_price AS price,
       product_prices.currency,
-      (round((((1)::numeric - ((1.0 * (product_prices.sale_price)::numeric) / (product_prices.base_price)::numeric)) * (100)::numeric)))::integer AS discount_percent
+      COALESCE(product_prices.sale_price, product_prices.base_price) AS price,
+      ( SELECT count(*) AS count
+             FROM product_reviews
+            WHERE (product_reviews.product_id = products.id)) AS reviews_count,
+      ( SELECT avg(product_reviews.rating) AS avg
+             FROM product_reviews
+            WHERE (product_reviews.product_id = products.id)) AS reviews_average,
+      ( SELECT count(DISTINCT product_reviews.customer_id) AS count
+             FROM product_reviews
+            WHERE (product_reviews.product_id = products.id)) AS customer_reviews_count,
+      ( SELECT avg(latest_reviews.rating) AS avg
+             FROM ( SELECT DISTINCT ON (product_reviews.customer_id) product_reviews.rating
+                     FROM product_reviews
+                    WHERE (product_reviews.product_id = products.id)
+                    ORDER BY product_reviews.customer_id, product_reviews.created_at DESC) latest_reviews) AS average_review_for_latest,
+      ( SELECT sum(latest_reviews.rating) AS sum
+             FROM ( SELECT DISTINCT ON (product_reviews.customer_id) product_reviews.rating
+                     FROM product_reviews
+                    WHERE (product_reviews.product_id = products.id)
+                    ORDER BY product_reviews.customer_id, product_reviews.created_at DESC) latest_reviews) AS total_review_for_latest,
+      ( SELECT count(latest_reviews.rating) AS count
+             FROM ( SELECT DISTINCT ON (product_reviews.customer_id) product_reviews.rating
+                     FROM product_reviews
+                    WHERE (product_reviews.product_id = products.id)
+                    ORDER BY product_reviews.customer_id, product_reviews.created_at DESC) latest_reviews) AS number_review_for_latest
      FROM (products
        JOIN product_prices ON ((product_prices.product_id = products.id)))
-    WHERE ((products.active = true) AND (product_prices.sale_price >= 1))
-    ORDER BY ((round((((1)::numeric - ((1.0 * (product_prices.sale_price)::numeric) / (product_prices.base_price)::numeric)) * (100)::numeric)))::integer) DESC
-   LIMIT 4;
+    WHERE (products.active = true)
+    ORDER BY products.name;
   SQL
 end
