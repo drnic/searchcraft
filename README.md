@@ -150,6 +150,13 @@ SearchCraft will automatically create an internal DB table that it needs, so the
 2. Read and run the examples in the [examples/](examples/) folder.
 3. Look at the Rails app in the [demo_app](demo_app/) folder. It contains models, SearchCraft builders, unit tests, and system tests.
 
+### Features
+
+* Watches `Builder` subclasses, and automatically detects change to materialize view schema and recreates it
+* ActiveRecord model mixin to allow `refresh!` of materialized view contents
+* Dumps `db/schema.rb` whenever materialized view is updated
+* Annotates models whenever materialized view is updated, if `annotate` gem is installed
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
