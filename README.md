@@ -13,17 +13,12 @@ Inside Rails and ActiveRecord, you can access a read-only materialized view like
 ```ruby
 class ProductSearch < ActiveRecord::Base
   include SearchCraft::Model
-
-  belongs_to :product, foreign_key: :product_id, primary_key: :id
-  belongs_to :category, foreign_key: :category_id, primary_key: :id
-
-  scope :within_category, ->(category) { where(category: category) }
 end
 ```
 
 Done. Whatever columns you describe in your view will become attributes on your model. If you include foreign keys, then you can use `belongs_to` associations. You can add scopes. You can add methods. You can use it as the starting point for queries with the rest of your SQL database. It's just a regular ActiveRecord model.
 
-All this is already possible with Rails and ActiveRecord. SearchCraft achievement is to make it trivial to write your materialized views, and then to iterate on them. Design them in ActiveRecord or Arel expressions, or even plain SQL. No migrations to rollback and re-run. No keeping track of whether the SQL view in your database matches the SearchCraft code in your Rails app. SearchCraft will automatically create and update your materialized views.
+All this is already possible with Rails and ActiveRecord. SearchCraft achievement is to make it trivial to live with your materialized views. Trivial to refresh them and to write them.
 
 If the underlying data to your SearchCraft materialized view changes and you want to refresh it, then call `refresh!` on your model class. This is provided by the `SearchCraft::Model` mixin.
 
@@ -31,37 +26,66 @@ If the underlying data to your SearchCraft materialized view changes and you wan
 ProductSearch.refresh!
 ```
 
-Update your SearchCraft view, run your tests, they work. Update your SearchCraft view, refresh your development app, and it works. Deploy to production anywhere, and it works.
+If the underlying view had columns `product_id`, `product_name`, `reviews_count`, and `reviews_average`, then you can query it like any other ActiveRecord model:
 
-What does it look like to design a materialized view with SearchCraft? Provide a method `view_scope` that returns an ActiveRecord/Arel query.
+```ruby
+ProductSearch.all
+[#<ProductSearch:0x00000001041a2598 id: 1, product_id: 2, product_name: "iPhone 15", reviews_count: 5, reviews_average: 0.38e1>,
+ #<ProductSearch:0x0000000104126060 id: 2, product_id: 1, product_name: "Laptop 3", reviews_count: 5, reviews_average: 0.28e1>,
+ #<ProductSearch:0x0000000104125840 id: 3, product_id: 4, product_name: "Monopoly", reviews_count: 3, reviews_average: 0.2e1>]
+```
+
+You can pass this ActiveRecord relation/array to your Rails views and render them. You can join it to other tables and apply further scopes.
+
+But SearchCraft's greatest feature is help you **write your materialized views**, and then to iterate on them.
+
+Design them in ActiveRecord expressions, Arel expressions, or even plain SQL. No migrations to rollback and re-run. No keeping track of whether the SQL view in your database matches the SearchCraft code in your Rails app. SearchCraft will automatically create and update your materialized views.
+
+Update your SearchCraft view, run your tests, they work. Update your SearchCraft view, refresh your development app, and it works. Open up `rails console` and it works; then update your view, type `reload!`, and it works. Deploy to production anywhere, and it works.
+
+What does it look like to design a materialized view with SearchCraft? For our `ProductSearch` model above, we create a `ProductSearchBuilder` class that inherits from `SearchCraft::Builder` and provides either a `view_scope` method or `view_select_sql` method.
+
+
 
 ```ruby
 class ProductSearchBuilder < SearchCraft::Builder
   def view_scope
-    Product
-      .joins(:category)
-      .where(active: true) # only active products
-      .where(categories: { active: true }) # only active categories
-      .order(:product_name)
+    Product.where(active: true)
       .select(
-        'products.id AS product_id, ' \
-        'products.name AS product_name, ' \
-        'categories.id AS category_id, ' \
-        'categories.name AS category_name'
+        "products.id AS product_id",
+        "products.name AS product_name",
+        "(SELECT COUNT(*) FROM product_reviews WHERE product_reviews.product_id = products.id) AS reviews_count",
+        "(SELECT AVG(rating) FROM product_reviews WHERE product_reviews.product_id = products.id) AS reviews_average"
       )
   end
 end
 ```
 
+The `view_scope` method must return an ActiveRecord relation. It can be as simple or as complex as you like. It can use joins, subqueries, and anything else you can do with ActiveRecord. In the example above we:
+
+* filter out inactive products
+* select the `id` and `name` columns from the `products` table; where we can later use `product_id` as a foreign key for joins to the `Product` model in our app
+* build new `reviews_count` and `reviews_average` columns using SQL subqueries that counts and averages the `rating` column from the `product_reviews` table
+
 SearchCraft will convert this into a materialized view, create it into your database, and the `ProductSearch` model above will start using it when you next reload your development app or run your tests. If you make a change, SearchCraft will drop and recreate the view automatically.
 
-When we use `ProductSearch` we will see the `select()` attributes:
+When we load up our app into Rails console, or run our tests, or refresh the development app, the `ProductSearch` model will be automatically updated to match any changes in `ProductSearchBuilder`.
 
 ```ruby
-[#<ProductSearch:0x718 product_id: 2, product_name: "iPhone 15", category_id: 1, category_name: "Electronics">,
- #<ProductSearch:0x420 product_id: 2, product_name: "iPhone 15", category_id: 2, category_name: "Phones">,
- #<ProductSearch:0x380 product_id: 1, product_name: "Laptop 3", category_id: 1, category_name: "Electronics">]
+ProductSearch.all
+  [#<ProductSearch:0x00000001041a2598 id: 1, product_id: 2, product_name: "iPhone 15", reviews_count: 5, reviews_average: 0.38e1>,
+   #<ProductSearch:0x0000000104126060 id: 2, product_id: 1, product_name: "Laptop 3", reviews_count: 5, reviews_average: 0.28e1>,
+   #<ProductSearch:0x0000000104125840 id: 3, product_id: 4, product_name: "Monopoly", reviews_count: 3, reviews_average: 0.2e1>]
+
+ProductSearch.order(reviews_average: :desc)
+  [#<ProductSearch:0x0000000105d91380 id: 1, product_id: 2, product_name: "iPhone 15", reviews_count: 5, reviews_average: 0.38e1>,
+   #<ProductSearch:0x0000000105d911a0 id: 2, product_id: 1, product_name: "Laptop 3", reviews_count: 5, reviews_average: 0.28e1>,
+   #<ProductSearch:0x0000000105d91100 id: 3, product_id: 4, product_name: "Monopoly", reviews_count: 3, reviews_average: 0.2e1>]
 ```
+
+Aren't confident writing complex SQL or Arel expressions? Me either. I ask GPT4 or GitHub Copilot. I explain the nature of my schema and tables, and ask it to write some SQL, and then ask to convert it into Arel. Or I give it a small snippet it of SQL, and ask it to convert it into Arel. I then copy/paste the results into my SearchCraft builder class.
+
+It's absolutely worth learning to express your search queries in SQL or Arel, and putting them into a SearchCraft materialized view. Your users will have a lightning fast experience.
 
 * A future version of SearchCraft might implement a similar feature for MySQL by creating simple views and caching the results in tables.
 

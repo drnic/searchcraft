@@ -192,6 +192,7 @@ SearchCraft::Builder.rebuild_any_if_changed!
 ProductSearch.reset_column_information # Not required in development or test environments
 puts "\nAdd basic review stats:"
 pp ProductSearch.all.reload
+pp ProductSearch.order(reviews_average: :desc)
 
 # Review stats for latest customers' review only
 class ProductSearchBuilder < SearchCraft::Builder
