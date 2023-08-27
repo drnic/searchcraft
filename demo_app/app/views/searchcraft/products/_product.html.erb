@@ -1,0 +1,12 @@
+<li id="product_<%= product.product_id %>">
+  <span><%= product.product_name %></span>
+  <span>
+    <%= number_to_currency(product.base_price / 100.0) %>
+    <% if product.sale_price %>
+      <span style="color: red;">
+        SALE
+        <%= number_to_currency(product.sale_price / 100.0) %>
+      </span>
+    <% end %>
+  </span>
+</li>

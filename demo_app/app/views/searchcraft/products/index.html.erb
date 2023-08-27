@@ -1,0 +1,25 @@
+<% if @onsale_products %>
+  <%= render "onsale_products" %>
+<% end %>
+
+<h1>Categories</h1>
+
+<% if @categories.any? %>
+  <ol>
+    <% @categories.each do |category| %>
+      <li><%= link_to category, root_url(@url_params.merge({category_id: category.id})) %></li>
+    <% end %>
+  </ol>
+<% end %>
+
+<h1><%= @products.first.class.name.pluralize %></h1>
+
+<% if @products.any? %>
+  <ol>
+    <% @products.each do |product| %>
+      <%= render "searchcraft/products/product", product: product %>
+    <% end %>
+  </ol>
+<% else %>
+  <p>No products found.</p>
+<% end %>

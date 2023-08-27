@@ -1,0 +1,8 @@
+<h1>Menu</h1>
+
+<p>Currency: <%= @currency %></p>
+
+<ol>
+  <li><%= link_to "Normal", slow_products_url(@url_params) %></li>
+  <li><%= link_to "SearchCraft", searchcraft_products_url(@url_params) %></li>
+</ol>

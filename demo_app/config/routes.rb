@@ -1,3 +1,10 @@
 Rails.application.routes.draw do
-  root "products#index"
+  namespace :slow do
+    resources :products, only: [:index]
+  end
+  namespace :searchcraft do
+    resources :products, only: [:index]
+  end
+
+  root "slow/products#index"
 end
