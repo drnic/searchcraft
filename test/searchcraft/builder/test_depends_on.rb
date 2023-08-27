@@ -39,13 +39,13 @@ class Cubed < ActiveRecord::Base
 end
 
 describe SearchCraft::Builder do
-  it "ok" do
+  it "rebuilds based on depends_on tree structure" do
     # Connection to PostgreSQL server
     database_url = ENV.fetch("DATABASE_URL", "postgres://localhost:5432")
     ActiveRecord::Base.establish_connection(database_url)
 
     # Database name
-    database_name = "searchcraft_gem_builder_test"
+    database_name = "searchcraft_gem_test_builder_depends_on"
 
     begin
       ActiveRecord::Base.connection.drop_database(database_name)
@@ -73,5 +73,9 @@ describe SearchCraft::Builder do
     assert_equal [1, 4, 9, 16, 25], Squared.pluck(:squared)
 
     assert_equal [1, 2, 3, 4, 5].map { |n| n * n * n }, Cubed.pluck(:cubed)
+
+    # View name is based on namespace + class name
+    assert_equal "numbers", NumberBuilder.new.view_name
+    assert_equal "numbers", Number.table_name
   end
 end

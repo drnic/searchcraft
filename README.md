@@ -287,11 +287,14 @@ For example, you can `select()` only the columns that you want using SQL express
 ```ruby
 class ProductLatestArrivalBuilder < SearchCraft::Builder
   def view_scope
-    Product.limit(5).select(
-      'products.id as product_id',
-      'products.name as product_name',
-      'products.image_url as product_image_url',
-    )
+    Product
+      .order(created_at: :desc)
+      .limit(5)
+      .select(
+        "products.id as product_id",
+        "products.name as product_name",
+        "products.image_url as product_image_url",
+      )
   end
 end
 ```
@@ -301,11 +304,14 @@ Or you can use Arel expressions to build the SQL:
 ```ruby
 class ProductLatestArrivalBuilder < SearchCraft::Builder
   def view_scope
-    Product.limit(5).select(
-      Product.arel_table[:id].as('product_id'),
-      Product.arel_table[:name].as('product_name'),
-      Product.arel_table[:image_url].as('product_image_url'),
-    )
+    Product
+      .order(created_at: :desc)
+      .limit(5)
+      .select(
+        Product.arel_table[:id].as("product_id"),
+        Product.arel_table[:name].as("product_name"),
+        Product.arel_table[:image_url].as("product_image_url"),
+      )
   end
 end
 ```
@@ -323,6 +329,12 @@ To refresh the view:
 
 ```ruby
 ProductLatestArrival.refresh!
+```
+
+Alternately, to refresh all views:
+
+```ruby
+SearchCraft::Model.refresh_all!
 ```
 
 And confirm that the latest new arrivals are now in the materialized view:
@@ -343,7 +355,7 @@ Then remove the files and `git checkout .` to revert any other changes.
 ```plain
 rm app/searchcraft/product_latest_arrival_builder.rb
 rm app/models/product_latest_arrival.rb
-git checkout .
+git checkout db/schema.rb
 ```
 
 ### Features
@@ -352,6 +364,7 @@ git checkout .
 * ActiveRecord model mixin to allow `refresh!` of materialized view contents
 * Dumps `db/schema.rb` whenever materialized view is updated
 * Annotates models whenever materialized view is updated, if `annotate` gem is installed
+* Namespaced models/builders will use the full namesapce + classname for the materialized view name
 
 ## Development
 

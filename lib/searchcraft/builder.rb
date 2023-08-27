@@ -52,7 +52,7 @@ class SearchCraft::Builder
           # TODO: namespaced classes - might need to load the file, and see what was created?
           # Or assume the class name by its file path?
           File.readlines(file).each do |line|
-            if (match = line.match(/class\s+(\w+)\s*<\s*SearchCraft::Builder/))
+            if (match = line.match(/class\s+([\w:]+)\s*<\s*SearchCraft::Builder/))
               class_name = match[1]
               warn "Found #{class_name} in #{file}"
               @subclass_names << class_name
@@ -140,7 +140,7 @@ class SearchCraft::Builder
 
   # ProductSearchBuilder name becomes product_searches
   def base_sql_name
-    self.class.name.gsub(/Builder$/, "").demodulize.underscore.pluralize
+    self.class.name.gsub(/Builder$/, "").tableize.tr("/", "_")
   end
 
   def create_sequence!

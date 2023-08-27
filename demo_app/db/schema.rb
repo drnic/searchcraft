@@ -157,4 +157,20 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_25_004026) do
     ORDER BY ((round((((1)::numeric - ((1.0 * (product_searches.sale_price)::numeric) / (product_searches.base_price)::numeric)) * (100)::numeric)))::integer) DESC
    LIMIT 4;
   SQL
+  create_view "product_latest_arrivals", materialized: true, sql_definition: <<-SQL
+      SELECT products.id AS product_id,
+      products.name AS product_name,
+      products.image_url AS product_image_url
+     FROM products
+    ORDER BY products.created_at DESC
+   LIMIT 5;
+  SQL
+  create_view "my_store_product_latest_arrivals", materialized: true, sql_definition: <<-SQL
+      SELECT products.id AS product_id,
+      products.name AS product_name,
+      products.image_url AS product_image_url
+     FROM products
+    ORDER BY products.created_at DESC
+   LIMIT 5;
+  SQL
 end
