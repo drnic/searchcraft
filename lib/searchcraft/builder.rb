@@ -54,6 +54,7 @@ class SearchCraft::Builder
           File.readlines(file).each do |line|
             if (match = line.match(/class\s+(\w+)\s*<\s*SearchCraft::Builder/))
               class_name = match[1]
+              warn "Found #{class_name} in #{file}"
               @subclass_names << class_name
             end
           end
@@ -157,6 +158,6 @@ class SearchCraft::Builder
   end
 
   def update_hash_store!
-    SearchCraft::ViewHashStore.update!(builder: self)
+    SearchCraft::ViewHashStore.update_for(builder: self)
   end
 end

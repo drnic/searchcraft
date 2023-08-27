@@ -8,6 +8,7 @@ module SearchCraft
       rescue => e
         # Probably missing tables before migrations run
         puts "Preparing SearchCraft: #{e.message}"
+        puts e.backtrace
       end
     end
   end
