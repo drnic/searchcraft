@@ -1,4 +1,8 @@
-![searchcraft-logo](docs/searchcraft-logo-on-white.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/drnic/searchcraft/blob/develop/docs/searchcraft-logo-white.png?raw=true">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/drnic/searchcraft/blob/develop/docs/searchcraft-logo-black.png?raw=true">
+  <img src="https://raw.githubusercontent.com/drnic/searchcraft/develop/docs/searchcraft-logo-black.png">
+</picture>
 
 Instant search for Rails and ActiveRecord using SQL materialized views.
 
