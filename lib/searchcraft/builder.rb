@@ -94,7 +94,7 @@ class SearchCraft::Builder
       end
       drop_view!
       create_view!
-      SearchCraft::ViewHashStore.update_for(builder: self)
+      update_hash_store!
       dump_schema!
       annotate_models!
       true
@@ -154,5 +154,9 @@ class SearchCraft::Builder
 
       ActiveRecord::Base.connection.add_index(view_name, columns, **options)
     end
+  end
+
+  def update_hash_store!
+    SearchCraft::ViewHashStore.update!(builder: self)
   end
 end
