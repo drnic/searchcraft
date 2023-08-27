@@ -209,7 +209,7 @@ We can confirm this by opening up `rails console` and trying to query it:
 
 ```ruby
 ProductTopSeller.all
-ActiveRecord::StatementInvalid ERROR: relation "product_top_sellers" does not exist
+# ActiveRecord::StatementInvalid ERROR: relation "product_top_sellers" does not exist
 ```
 
 We can create a new SearchCraft builder class to define our materialized view. Create a new file `app/searchcraft/product_top_seller_builder.rb`.
@@ -277,6 +277,34 @@ SQL
 ```
 
 You can now continue to change the `view_scope` in your builder, and run `reload!` in rails console to test out your change.
+
+For example, you can `select()` only the columns that you want using SQL expression for each one:
+
+```ruby
+class ProductTopSellerBuilder < SearchCraft::Builder
+  def view_scope
+    Product.limit(5).select(
+      'products.id as product_id',
+      'products.name as product_name',
+      'products.image_url as product_image_url',
+    )
+  end
+end
+```
+
+Or you can use Arel expressions to build the SQL:
+
+```ruby
+class ProductTopSellerBuilder < SearchCraft::Builder
+  def view_scope
+    Product.limit(5).select(
+      Product.arel_table[:id].as('product_id'),
+      Product.arel_table[:name].as('product_name'),
+      Product.arel_table[:image_url].as('product_image_url'),
+    )
+  end
+end
+```
 
 If you want to remove the artifacts of this tutorial. First, drop the materialized view from your database schema:
 
