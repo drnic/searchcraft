@@ -10,13 +10,14 @@ class Searchcraft::ProductsController < ApplicationController
       if (@category = Category.find_by(id: category_id))
         @products = @products.within_category(@category)
       else
-        redirect_to root_url(searchcraft: true)
+        redirect_to searchcraft_products_path, alert: "Category not found"
         return
       end
+    else
+      @onsale_products = OnsaleSearch.all.load
     end
 
     @products.load
-    @onsale_products = OnsaleSearch.all.load
 
     @url_params = {}
     @url_params[:category_id] = @category.id if @category

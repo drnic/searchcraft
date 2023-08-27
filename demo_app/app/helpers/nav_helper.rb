@@ -16,7 +16,7 @@ module NavHelper
     active = if paths.present?
       paths.any? { |path| request.path.start_with?(path) }
     else
-      request.path == url
+      request.path == url || request.fullpath == url
     end
 
     classes = active ? active_class : inactive_class
