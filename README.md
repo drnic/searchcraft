@@ -1,10 +1,18 @@
 ![searchcraft-logo](docs/searchcraft-logo-on-white.png)
 
-"Instant Search for Rails and ActiveRecord using SQL materialized views."
+Instant search for Rails and ActiveRecord using SQL materialized views.
+
+* Native Rails replacement for ElasticSearch
+* Huge speed improvements to homepages and dashboards
+* Create reporting and summary tables that are easily updatable and queryable
+
+## Introduction
 
 Add lightning quick search capabilities to your Rails apps without external systems like ElasticSearch. It's now magically simple to craft the ActiveRecord/Arel expressions we already know and love, and convert them into SQL materialized views: ready to be queried and composed with ActiveRecord. Everything you love about Rails, but faster.
 
-What makes Rails slow for search? Large tables, lots of joins, subqueries, missing or unused indexes, and complex queries. SearchCraft makes it trivial to use powerful SQL materialized views to pre-calculate the results of your search queries. It's like a database index, but for complex queries.
+**What makes Rails slow for search?** Large tables, lots of joins, subqueries, missing or unused indexes, and complex queries.
+
+SearchCraft makes it trivial to write and use powerful **SQL materialized views** to pre-calculate the results of your search and reporting queries. It's like a database index, but for complex queries.
 
 Materialized views are a wonderful feature of PostgreSQL, Oracle, and SQL Server*. They are a table of pre-calculated results of a query. They are fast to query. They are awesome. Like other search systems, you control when you want to refresh them with new data.
 
@@ -16,15 +24,7 @@ class ProductSearch < ActiveRecord::Base
 end
 ```
 
-Done. Whatever columns you describe in your view will become attributes on your model. If you include foreign keys, then you can use `belongs_to` associations. You can add scopes. You can add methods. You can use it as the starting point for queries with the rest of your SQL database. It's just a regular ActiveRecord model.
-
-All this is already possible with Rails and ActiveRecord. SearchCraft achievement is to make it trivial to live with your materialized views. Trivial to refresh them and to write them.
-
-If the underlying data to your SearchCraft materialized view changes and you want to refresh it, then call `refresh!` on your model class. This is provided by the `SearchCraft::Model` mixin.
-
-```ruby
-ProductSearch.refresh!
-```
+Done. Whatever columns you describe in your view will become attributes on your model.
 
 If the underlying view had columns `product_id`, `product_name`, `reviews_count`, and `reviews_average`, then you can query it like any other ActiveRecord model:
 
@@ -33,6 +33,21 @@ ProductSearch.all
 [#<ProductSearch product_id: 2, product_name: "iPhone 15", reviews_count: 5, reviews_average: 0.38e1>,
  #<ProductSearch product_id: 1, product_name: "Laptop 3", reviews_count: 5, reviews_average: 0.28e1>,
  #<ProductSearch product_id: 4, product_name: "Monopoly", reviews_count: 3, reviews_average: 0.2e1>]
+
+ProductSearch.order(reviews_average: :desc)
+[#<ProductSearch product_id: 2, product_name: "iPhone 15", reviews_count: 5, reviews_average: 0.38e1>,
+   #<ProductSearch product_id: 1, product_name: "Laptop 3", reviews_count: 5, reviews_average: 0.28e1>,
+   #<ProductSearch product_id: 4, product_name: "Monopoly", reviews_count: 3, reviews_average: 0.2e1>]
+```
+
+If you include foreign keys, then you can use `belongs_to` associations. You can add scopes. You can add methods. You can use it as the starting point for queries with the rest of your SQL database. It's just a regular ActiveRecord model.
+
+All this is already possible with Rails and ActiveRecord. SearchCraft achievement is to make it trivial to live with your materialized views. Trivial to refresh them and to write them.
+
+If the underlying data to your SearchCraft materialized view changes and you want to refresh it, then call `refresh!` on your model class. This is provided by the `SearchCraft::Model` mixin.
+
+```ruby
+ProductSearch.refresh!
 ```
 
 You can pass this ActiveRecord relation/array to your Rails views and render them. You can join it to other tables and apply further scopes.
