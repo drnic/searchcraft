@@ -199,31 +199,31 @@ bundle add searchcraft
 
 Pick one of your existing application models, say `Product`, and we will create a trivial materialized view for it. Say, we want a fast way to get the top 5 selling products and some details we'll use for it in our HTML view.
 
-Create a new ActiveRecord model file `app/models/product_top_seller.rb`:
+Create a new ActiveRecord model file `app/models/product_latest_arrival.rb`:
 
 ```ruby
-class ProductTopSeller < ActiveRecord::Base
+class ProductLatestArrival < ActiveRecord::Base
   include SearchCraft::Model
 end
 ```
 
-By Rails conventions, this model will look for a SQL table or view called `product_top_sellers`. This does not exist yet.
+By Rails conventions, this model will look for a SQL table or view called `product_latest_arrivals`. This does not exist yet.
 
 We can confirm this by opening up `rails console` and trying to query it:
 
 ```ruby
-ProductTopSeller.all
-# ActiveRecord::StatementInvalid ERROR: relation "product_top_sellers" does not exist
+ProductLatestArrival.all
+# ActiveRecord::StatementInvalid ERROR: relation "product_latest_arrivals" does not exist
 ```
 
-We can create a new SearchCraft builder class to define our materialized view. Create a new file `app/searchcraft/product_top_seller_builder.rb`.
+We can create a new SearchCraft builder class to define our materialized view. Create a new file `app/searchcraft/product_latest_arrival_builder.rb`.
 
 I suggest `app/searchcraft` for your builders, but they can go into any `app/` subfolder that is autoloaded by Rails.
 
 ```ruby
-class ProductTopSellerBuilder < SearchCraft::Builder
+class ProductLatestArrivalBuilder < SearchCraft::Builder
   def view_scope
-    Product.limit(5)
+    Product.order(created_at: :desc).limit(5)
   end
 end
 ```
@@ -233,10 +233,10 @@ Inside your `rails console``, run `reload!` and check your query again:
 ```ruby
 reload!
 
-ProductTopSeller.all
-  ProductTopSeller Load (1.3ms)  SELECT "product_top_sellers".* FROM "product_top_sellers"
+ProductLatestArrival.all
+  ProductLatestArrival Load (1.3ms)  SELECT "product_latest_arrivals".* FROM "product_latest_arrivals"
 =>
-[#<ProductTopSeller:0x000000010a737d18
+[#<ProductLatestArrival:0x000000010a737d18
   id: 1,
   name: "Rustic Wool Coat",
   active: true,
@@ -246,12 +246,12 @@ ProductTopSeller.all
 ...
 ```
 
-If you have the `annotate` gem installed in your `Gemfile`, you will also note that `product_top_seller.rb` model has been updated to reflect the columns in the materialized view.
+If you have the `annotate` gem installed in your `Gemfile`, you will also note that `product_latest_arrival.rb` model has been updated to reflect the columns in the materialized view.
 
 ```ruby
 # == Schema Information
 #
-# Table name: product_top_sellers
+# Table name: product_latest_arrivals
 #
 #  id         :bigint
 #  name       :string
@@ -260,7 +260,7 @@ If you have the `annotate` gem installed in your `Gemfile`, you will also note t
 #  updated_at :datetime
 #  image_url  :string
 #
-class ProductTopSeller < ActiveRecord::Base
+class ProductLatestArrival < ActiveRecord::Base
   include SearchCraft::Model
 end
 ```
@@ -268,7 +268,7 @@ end
 If your application is under source control, you can also see that `db/schema.rb` has been updated to reflect the latest view definition. Run `git diff db/schema.rb`:
 
 ```ruby
-create_view "product_top_sellers", materialized: true, sql_definition: <<-SQL
+create_view "product_latest_arrivals", materialized: true, sql_definition: <<-SQL
     SELECT products.id,
     products.name,
     products.active,
@@ -285,7 +285,7 @@ You can now continue to change the `view_scope` in your builder, and run `reload
 For example, you can `select()` only the columns that you want using SQL expression for each one:
 
 ```ruby
-class ProductTopSellerBuilder < SearchCraft::Builder
+class ProductLatestArrivalBuilder < SearchCraft::Builder
   def view_scope
     Product.limit(5).select(
       'products.id as product_id',
@@ -299,7 +299,7 @@ end
 Or you can use Arel expressions to build the SQL:
 
 ```ruby
-class ProductTopSellerBuilder < SearchCraft::Builder
+class ProductLatestArrivalBuilder < SearchCraft::Builder
   def view_scope
     Product.limit(5).select(
       Product.arel_table[:id].as('product_id'),
@@ -310,17 +310,39 @@ class ProductTopSellerBuilder < SearchCraft::Builder
 end
 ```
 
+What about data updates? Let's create more `Products`:
+
+```ruby
+Product.create!(name: "Starlink")
+Product.create!(name: "Fishing Rod")
+```
+
+If you were to inspect `ProductLatestArrival.all` you would **not find** these new products. This is because the materialized view is a snapshot of the data at the time it was created or last refreshed.
+
+To refresh the view:
+
+```ruby
+ProductLatestArrival.refresh!
+```
+
+And confirm that the latest new arrivals are now in the materialized view:
+
+```ruby
+ProductLatestArrival.pluck(:name)
+=> ["Fishing Rod", "Starlink", "Sleek Steel Bag", "Ergonomic Plastic Bench", "Fantastic Wooden Keyboard"]
+```
+
 If you want to remove the artifacts of this tutorial. First, drop the materialized view from your database schema:
 
 ```ruby
-ProductTopSellerBuilder.new.drop_view!
+ProductLatestArrivalBuilder.new.drop_view!
 ```
 
 Then remove the files and `git checkout .` to revert any other changes.
 
 ```plain
-rm app/searchcraft/product_top_seller_builder.rb
-rm app/models/product_top_seller.rb
+rm app/searchcraft/product_latest_arrival_builder.rb
+rm app/models/product_latest_arrival.rb
 git checkout .
 ```
 
@@ -351,5 +373,5 @@ Everyone interacting in the Searchcraft project's codebases, issue trackers, cha
 
 ## Credits
 
-* [scenic](https://github.com/scenic-views/scenic) gem first allowed me to use materialized views in Rails, but I was iterating on my view schema so frequently that their migration approach - `rails db:rollback`, rebuild migration SQL, `rails db:migrate`, and then test - became slow. It also introduced bugs - I would forget to run the steps, and then see odd behaviour. If you have relatively static views or materialized views, and want to use Rails migrations, please try out `scenic` gem.
+* [scenic](https://github.com/scenic-views/scenic) gem first allowed me to use materialized views in Rails, but I was iterating on my view schema so frequently that their migration approach - `rails db:rollback`, rebuild migration SQL, `rails db:migrate`, and then test - became slow. It also introduced bugs - I would forget to run the steps, and then see odd behaviour. If you have relatively static views or materialized views, and want to use Rails migrations, please try out `scenic` gem. This `searchcraft` gem still depends on `scenic` for its view `refresh` feature, and adding views into `schema.rb`.
 * [activerecord](https://github.com/rails/rails) has been one of the most wonderful gifts to the universe since its inception. As a bonus, it allowed me to become "Dr Nic" in 2006 when I performed silly tricks with it in a rubygem called "Dr Nic's Magic Models". I've made many dear friends and had a wonderful career since those days.
