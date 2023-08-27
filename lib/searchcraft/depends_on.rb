@@ -1,9 +1,6 @@
 module SearchCraft::DependsOn
   extend ActiveSupport::Concern
 
-  included do
-  end
-
   class_methods do
     @@dependencies = {}
 
