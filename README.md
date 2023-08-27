@@ -181,6 +181,116 @@ SearchCraft will automatically create an internal DB table that it needs, so the
 1. Re-read the introduction above.
 2. Read and run the examples in the [examples/](examples/) folder.
 3. Look at the Rails app in the [demo_app](demo_app/) folder. It contains models, SearchCraft builders, unit tests, and system tests.
+4. Follow along this simple tutorial in any of your Rails apps.
+
+### Tutorial
+
+Inside any Rails app you can follow along with this tutorial. If you don't have a Rails app, use the app found in `demo_app` folder of this project.
+
+Install the gem:
+
+```plain
+bundle add searchcraft
+```
+
+Pick one of your existing application models, say `Product`, and we will create a trivial materialized view for it. Say, we want a fast way to get the top 5 selling products and some details we'll use for it in our HTML view.
+
+Create a new ActiveRecord model file `app/models/product_top_seller.rb`:
+
+```ruby
+class ProductTopSeller < ActiveRecord::Base
+  include SearchCraft::Model
+end
+```
+
+By Rails conventions, this model will look for a SQL table or view called `product_top_sellers`. This does not exist yet.
+
+We can confirm this by opening up `rails console` and trying to query it:
+
+```ruby
+ProductTopSeller.all
+ActiveRecord::StatementInvalid ERROR: relation "product_top_sellers" does not exist
+```
+
+We can create a new SearchCraft builder class to define our materialized view. Create a new file `app/searchcraft/product_top_seller_builder.rb`.
+
+I suggest `app/searchcraft` for your builders, but they can go into any `app/` subfolder that is autoloaded by Rails.
+
+```ruby
+class ProductTopSellerBuilder < SearchCraft::Builder
+  def view_scope
+    Product.limit(5)
+  end
+end
+```
+
+Inside your `rails console``, run `reload!` and check your query again:
+
+```ruby
+reload!
+
+ProductTopSeller.all
+  ProductTopSeller Load (1.3ms)  SELECT "product_top_sellers".* FROM "product_top_sellers"
+=>
+[#<ProductTopSeller:0x000000010a737d18
+  id: 1,
+  name: "Rustic Wool Coat",
+  active: true,
+  created_at: Fri, 25 Aug 2023 07:15:16.995228000 UTC +00:00,
+  updated_at: Fri, 25 Aug 2023 07:15:16.995228000 UTC +00:00,
+  image_url: "https://loremflickr.com/g/320/320/coat?lock=1">,
+...
+```
+
+If you have the `annotate` gem installed in your `Gemfile`, you will also note that `product_top_seller.rb` model has been updated to reflect the columns in the materialized view.
+
+```ruby
+# == Schema Information
+#
+# Table name: product_top_sellers
+#
+#  id         :bigint
+#  name       :string
+#  active     :boolean
+#  created_at :datetime
+#  updated_at :datetime
+#  image_url  :string
+#
+class ProductTopSeller < ActiveRecord::Base
+  include SearchCraft::Model
+end
+```
+
+If your application is under source control, you can also see that `db/schema.rb` has been updated to reflect the latest view definition. Run `git diff db/schema.rb`:
+
+```ruby
+create_view "product_top_sellers", materialized: true, sql_definition: <<-SQL
+    SELECT products.id,
+    products.name,
+    products.active,
+    products.created_at,
+    products.updated_at,
+    products.image_url
+    FROM products
+  LIMIT 5;
+SQL
+```
+
+You can now continue to change the `view_scope` in your builder, and run `reload!` in rails console to test out your change.
+
+If you want to remove the artifacts of this tutorial. First, drop the materialized view from your database schema:
+
+```ruby
+ProductTopSellerBuilder.new.drop_view!
+```
+
+Then remove the files and `git checkout .` to revert any other changes.
+
+```plain
+rm app/searchcraft/product_top_seller_builder.rb
+rm app/models/product_top_seller.rb
+git checkout .
+```
 
 ### Features
 
