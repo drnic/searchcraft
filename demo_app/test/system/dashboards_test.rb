@@ -9,7 +9,9 @@ class DashboardsTest < ApplicationSystemTestCase
     assert_selector "h1", text: "Products"
     assert_selector "h1", text: "ProductSearches", count: 0
 
-    click_on "SearchCraft"
+    within "header nav" do
+      click_on "SearchCraft"
+    end
 
     assert_selector "h2", text: "Biggest Discounts"
     assert_selector "h1", text: "Categories"
