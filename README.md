@@ -44,6 +44,10 @@ If you include foreign keys, then you can use `belongs_to` associations. You can
 
 All this is already possible with Rails and ActiveRecord. SearchCraft achievement is to make it trivial to live with your materialized views. Trivial to refresh them and to write them.
 
+### Refresh materialized views
+
+Each SearchCraft materialized view a snapshot of the results of the query at the time it was created, or last refreshed. It's like a table whose contents are derived from a query.
+
 If the underlying data to your SearchCraft materialized view changes and you want to refresh it, then call `refresh!` on your model class. This is provided by the `SearchCraft::Model` mixin.
 
 ```ruby
@@ -52,11 +56,15 @@ ProductSearch.refresh!
 
 You can pass this ActiveRecord relation/array to your Rails views and render them. You can join it to other tables and apply further scopes.
 
+### Writing and iterating on materialized views
+
 But SearchCraft's greatest feature is help you **write your materialized views**, and then to iterate on them.
 
 Design them in ActiveRecord expressions, Arel expressions, or even plain SQL. No migrations to rollback and re-run. No keeping track of whether the SQL view in your database matches the SearchCraft code in your Rails app. SearchCraft will automatically create and update your materialized views.
 
 Update your SearchCraft view, run your tests, they work. Update your SearchCraft view, refresh your development app, and it works. Open up `rails console` and it works; then update your view, type `reload!`, and it works. Deploy to production anywhere, and it works.
+
+### Write views in ActiveRecord or Arel
 
 What does it look like to design a materialized view with SearchCraft? For our `ProductSearch` model above, we create a `ProductSearchBuilder` class that inherits from `SearchCraft::Builder` and provides either a `view_scope` method or `view_select_sql` method.
 
@@ -96,6 +104,8 @@ ProductSearch.order(reviews_average: :desc)
    #<ProductSearch product_id: 4, product_name: "Monopoly", reviews_count: 3, reviews_average: 0.2e1>]
 ```
 
+### Write views in SQL
+
 If you want to write SQL, then you can use the `view_select_sql` method instead.
 
 ```ruby
@@ -115,6 +125,8 @@ end
 Number.all
 [#<Number number: 1>, #<Number number: 2>, #<Number number: 3>, #<Number number: 4>, #<Number number: 5>]
 ```
+
+### Dependencies between views
 
 Once you have one SearchCraft materialized view, you might want to create another that depends upon it. You can do this too with the `depends_on` method.
 
@@ -143,11 +155,16 @@ Squared.all
  #<Squared number: 5, squared: 25>]
 ```
 
+### Use ChatGPT to write your views
+
 Aren't confident writing complex SQL or Arel expressions? Me either. I ask GPT4 or GitHub Copilot. I explain the nature of my schema and tables, and ask it to write some SQL, and then ask to convert it into Arel. Or I give it a small snippet it of SQL, and ask it to convert it into Arel. I then copy/paste the results into my SearchCraft builder class.
 
 It is absolutely worth learning to express your search queries in SQL or Arel, and putting them into a SearchCraft materialized view. Your users will have a lightning fast experience.
 
+### Databases and materialized view support
+
 * A future version of SearchCraft might implement a similar feature for MySQL by creating simple views and caching the results in tables.
+* SearchCraft has been developed and tested against PostgreSQL, but it should "just work" for database servers that support materialized views, such as Oracle and SQL Server. Please create tickets if there are issues.
 
 ## Installation
 
