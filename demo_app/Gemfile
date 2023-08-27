@@ -62,3 +62,5 @@ gem "annotate", "~> 3.2"
 gem "rack-mini-profiler", "~> 3.1", require: false
 
 gem "httparty", "~> 0.21.0"
+
+gem "inline_svg", "~> 1.9"
