@@ -1,8 +1,15 @@
-<h1>Menu</h1>
-
-<p>Currency: <%= @currency %></p>
-
-<ol>
-  <li><%= link_to "Normal", slow_products_url(@url_params) %></li>
-  <li><%= link_to "SearchCraft", searchcraft_products_url(@url_params) %></li>
-</ol>
+<header class="flex flex-wrap sm:justify-start sm:flex-nowrap z-50 w-full bg-white border-b border-gray-200 text-sm py-3 sm:py-0 dark:bg-gray-800 dark:border-gray-700">
+  <nav class="relative max-w-7xl w-full mx-auto px-4 sm:flex sm:items-center sm:justify-between sm:px-6 lg:px-8" aria-label="Global">
+    <div class="flex items-center justify-between">
+      <a class="font-logo flex-none text-xl font-semibold dark:text-white" href="/" aria-label="SearchCraft">SearchCraft</a>
+    </div>
+    <div class="overflow-hidden transition-all duration-300 basis-full grow sm:block">
+      <div class="flex flex-col gap-y-4 gap-x-0 mt-5 sm:flex-row sm:items-center sm:gap-y-0 sm:gap-x-7 sm:mt-0 sm:pl-7">
+        <% active_class = "text-blue-600 sm:py-6 dark:text-blue-500" %>
+        <% inactive_class = "text-gray-500 hover:text-gray-400 sm:py-6 dark:text-gray-400 dark:hover:text-gray-500" %>
+        <%= nav_link_to "Slow", slow_products_path(@url_params), class: "font-medium", active_class: active_class, inactive_class: inactive_class %>
+        <%= nav_link_to "SearchCraft", searchcraft_products_path(@url_params), class: "font-medium", active_class: active_class, inactive_class: inactive_class %>
+      </div>
+    </div>
+  </nav>
+</header>
