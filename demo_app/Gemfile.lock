@@ -1,9 +1,6 @@
 PATH
-  remote: ../..
+  remote: ..
   specs:
-    scenic (1.7.0)
-      activerecord (>= 4.0.0)
-      railties (>= 4.0.0)
     searchcraft (0.1.0)
       activerecord
       activesupport
@@ -190,6 +187,9 @@ GEM
       io-console (~> 0.5)
     rexml (3.2.6)
     rubyzip (2.3.2)
+    scenic (1.7.0)
+      activerecord (>= 4.0.0)
+      railties (>= 4.0.0)
     selenium-webdriver (4.10.0)
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
