@@ -2,6 +2,9 @@ class Slow::ProductsController < ApplicationController
   before_action :set_currency
 
   def index
+    # if request path is root_path then redirect to /slow/products
+    redirect_to slow_products_path and return if request.path == root_path
+
     @categories = Category.order(:name).load
 
     @products = Product.where(active: true).order(:name)

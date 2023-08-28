@@ -2,6 +2,9 @@ class Searchcraft::ProductsController < ApplicationController
   before_action :set_currency
 
   def index
+    # if request path is root_path then redirect to /searchcraft/products
+    redirect_to searchcraft_products_path and return if request.path == root_path
+
     @categories = Category.order(:name).load
 
     @products = ProductSearch.all

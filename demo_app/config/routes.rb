@@ -6,5 +6,5 @@ Rails.application.routes.draw do
     resources :products, only: [:index]
   end
 
-  root "slow/products#index"
+  root "searchcraft/products#index"
 end
