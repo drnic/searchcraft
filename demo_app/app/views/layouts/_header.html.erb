@@ -2,13 +2,14 @@
   <div class="relative max-w-7xl w-full mx-auto px-4 sm:flex sm:items-center sm:justify-between sm:px-6 lg:px-8" aria-label="Global">
     <div class="flex items-center justify-between">
       <a class="font-logo flex-none text-xl font-semibold dark:text-white" href="/" aria-label="SearchCraft">
-        <%= inline_svg_tag "searchcraft-logo-black.svg", class: "fill-current h-8", title: "SearchCraft", nocomment: true, aria: true %>
+        <%= inline_svg_tag "searchcraft-logo-black.svg", class: "dark:hidden fill-current h-8", title: "SearchCraft", nocomment: true, aria: true %>
+        <%= inline_svg_tag "searchcraft-logo-white.svg", class: "hidden dark:block fill-current h-8", title: "SearchCraft", nocomment: true, aria: true %>
       </a>
     </div>
     <nav class="overflow-hidden transition-all duration-300 basis-full grow sm:block">
       <div class="flex flex-col gap-y-4 gap-x-0 mt-5 sm:flex-row sm:items-center sm:gap-y-0 sm:gap-x-7 sm:mt-0 sm:pl-7">
         <% active_class = "text-blue-600 sm:py-6 dark:text-blue-500" %>
-        <% inactive_class = "text-gray-500 hover:text-gray-400 sm:py-6 dark:text-gray-400 dark:hover:text-gray-500" %>
+        <% inactive_class = "text-gray-500 hover:text-gray-400 sm:py-6 dark:text-gray-200 dark:hover:text-gray-400" %>
         <%= nav_link_to "Slow", slow_products_path(@url_params), starts_with: slow_products_path, class: "font-medium", active_class: active_class, inactive_class: inactive_class %>
         <%= nav_link_to "SearchCraft", searchcraft_products_path(@url_params), starts_with: searchcraft_products_path, class: "font-medium", active_class: active_class, inactive_class: inactive_class %>
       </div>

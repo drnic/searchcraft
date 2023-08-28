@@ -173,4 +173,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_25_004026) do
     ORDER BY products.created_at DESC
    LIMIT 5;
   SQL
+  create_view "inheritance_demo_baseclasses", materialized: true, sql_definition: <<-SQL
+      SELECT ('Product #'::text || generate_series(1, 3)) AS name;
+  SQL
+  create_view "inheritance_demo_subclasses", materialized: true, sql_definition: <<-SQL
+      SELECT ('Product #'::text || generate_series(1, 3)) AS name;
+  SQL
 end
