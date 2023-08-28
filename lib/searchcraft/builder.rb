@@ -155,6 +155,10 @@ class SearchCraft::Builder
     self.class.name.gsub(/Builder$/, "").tableize.tr("/", "_")
   end
 
+  def base_idx_name
+    "idx_#{base_sql_name}"
+  end
+
   def create_sequence!
     ActiveRecord::Base.connection.execute("CREATE SEQUENCE #{view_id_sequence_name} CYCLE;")
   end
@@ -162,7 +166,7 @@ class SearchCraft::Builder
   def create_indexes!
     view_indexes.each do |index_name, index_options|
       columns = index_options[:columns]
-      name = "idx_#{base_sql_name}_#{index_name}"
+      name = "#{base_idx_name}_#{index_name}"
       options = index_options.except(:columns).merge({name: name})
 
       ActiveRecord::Base.connection.add_index(view_name, columns, **options)
