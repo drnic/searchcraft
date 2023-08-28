@@ -37,7 +37,9 @@ class SearchCraft::Builder
     end
 
     def builders_to_rebuild
-      if Object.const_defined?(:Rails) && Rails.application
+      if SearchCraft.config.explicit_builder_class_names
+        SearchCraft.config.explicit_builder_class_names.map(&:constantize)
+      elsif Object.const_defined?(:Rails) && Rails.application
         find_subclasses_via_rails_eager_load_paths.map(&:constantize)
       else
         subclasses

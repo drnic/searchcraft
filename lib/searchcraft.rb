@@ -2,11 +2,22 @@
 
 module SearchCraft
   class Error < StandardError; end
+
+  extend self
+
+  def configure
+    yield(config)
+  end
+
+  def config
+    @config ||= Configuration.new
+  end
 end
 
 require "active_record"
 
 require_relative "searchcraft/version"
+require_relative "searchcraft/configuration"
 require_relative "searchcraft/annotate"
 require_relative "searchcraft/depends_on"
 require_relative "searchcraft/dump_schema"
