@@ -6,9 +6,13 @@
 
 Instant search for Rails and ActiveRecord using SQL materialized views.
 
+* 10x speed improvements to homepages and dashboards
 * Native Rails replacement for ElasticSearch
-* Huge speed improvements to homepages and dashboards
 * Create reporting and summary tables that are easily updatable and queryable
+
+See [demo app](https://ykdnr.hatchboxapp.com/searchcraft/products?category_id=54) (code found in `demo_app/` folder):
+
+[![searchcraft 10x speed demo](docs/searchcraft%2010x%20speed%20demo.png)](https://ykdnr.hatchboxapp.com/searchcraft/products?category_id=54)
 
 ## Introduction
 
