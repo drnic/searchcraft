@@ -2,7 +2,7 @@ require "test_helper"
 
 class Slow::ProductsControllerTest < ActionDispatch::IntegrationTest
   test "slow raw scopes" do
-    get root_url
+    get slow_products_url
     assert_response :success
 
     product1 = products(:one)
