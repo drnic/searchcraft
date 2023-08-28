@@ -44,24 +44,34 @@ class SearchCraft::Builder
       end
     end
 
-    def find_subclasses_via_rails_eager_load_paths
-      @subclass_names = []
+    # Looks for subclasses of SearchCraft::Builder in Rails eager load paths
+    # and then any subclasses of those.
+    # Returns an array of class names
+    def find_subclasses_via_rails_eager_load_paths(known_subclass_names: [])
+      subclass_names = []
 
+      potential_superclass_names = known_subclass_names + ["SearchCraft::Builder"]
+      potential_superclass_regex = Regexp.new(potential_superclass_names.join("|"))
+
+      # Ugh, this doesn't work for StoreConnect
       Rails.configuration.eager_load_paths.each do |load_path|
         Dir.glob("#{load_path}/**/*.rb").each do |file|
-          # TODO: namespaced classes - might need to load the file, and see what was created?
-          # Or assume the class name by its file path?
           File.readlines(file).each do |line|
-            if (match = line.match(/class\s+([\w:]+)\s*<\s*SearchCraft::Builder/))
+            if (match = line.match(/class\s+([\w:]+)\s*<\s*#{potential_superclass_regex}/))
               class_name = match[1]
-              warn "Found #{class_name} in #{file}"
-              @subclass_names << class_name
+              warn "Found #{class_name} in #{file}" unless known_subclass_names.include?(class_name)
+              subclass_names << class_name
             end
           end
         end
       end
 
-      @subclass_names
+      newly_found_subclass_names = subclass_names - known_subclass_names
+      if newly_found_subclass_names.any?
+        return find_subclasses_via_rails_eager_load_paths(known_subclass_names: subclass_names)
+      end
+
+      subclass_names
     end
   end
 
