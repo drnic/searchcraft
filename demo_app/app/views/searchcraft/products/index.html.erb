@@ -16,7 +16,7 @@
       <div class="relative w-full overflow-x-auto">
         <ul role="list" class="mx-4 grid grid-cols-2 lg:grid-cols-4 gap-8">
           <% @products.each do |product| %>
-            <%= render "searchcraft/products/product", product: product %>
+            <%= render "product", product: product %>
           <% end %>
         </ul>
       </div>

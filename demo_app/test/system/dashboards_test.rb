@@ -5,7 +5,7 @@ class DashboardsTest < ApplicationSystemTestCase
     visit root_url
 
     assert_selector "h2", text: "Biggest Discounts"
-    assert_selector "h1", text: "Products"
+    assert_selector "h2", text: "Products"
     assert_selector "h2", text: "ProductSearches", count: 0
 
     within "header nav" do
@@ -13,7 +13,7 @@ class DashboardsTest < ApplicationSystemTestCase
     end
 
     assert_selector "h2", text: "Biggest Discounts"
-    assert_selector "h1", text: "Products", count: 0
+    assert_selector "h2", text: "Products", count: 0
     assert_selector "h2", text: "ProductSearches"
   end
 end

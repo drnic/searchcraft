@@ -4,14 +4,25 @@
   <%= render "onsale_products" %>
 <% end %>
 
-<h1><%= @products.first.class.name.pluralize %></h1>
+<div class="py-16 sm:py-24 lg:mx-auto lg:max-w-7xl lg:px-8 lg:py-32">
+  <div class="flex items-center justify-between px-4 sm:px-6 lg:px-0">
+    <h2 id="trending-heading" class="text-2xl font-bold tracking-tight text-gray-900">
+      <%= @products.first.class.name.pluralize %>
+    </h2>
+  </div>
 
-<% if @products.any? %>
-  <ol>
-    <% @products.each do |product| %>
-      <%= render product %>
-    <% end %>
+  <% if @products.any? %>
+    <div id="products" class="relative mt-8">
+      <div class="relative w-full overflow-x-auto">
+        <ul role="list" class="mx-4 grid grid-cols-2 lg:grid-cols-4 gap-8">
+          <% @products.each do |product| %>
+            <%= render "product", product: product %>
+          <% end %>
+        </ul>
+      </div>
+    </div>
   </ol>
 <% else %>
   <p>No products found.</p>
 <% end %>
+</div>

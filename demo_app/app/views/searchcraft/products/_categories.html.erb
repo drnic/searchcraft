@@ -3,13 +3,13 @@
     <h1 class="my-2">Categories</h1>
 
     <div class="mb-2">
-      <%= link_to "All", slow_products_path %>
+      <%= link_to "All", searchcraft_products_path %>
     </div>
 
     <ul class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6">
       <% @categories.each do |category| %>
         <li><%= nav_link_to category,
-                  slow_products_path(@url_params.merge({category_id: category.id})),
+                  searchcraft_products_path(@url_params.merge({category_id: category.id})),
                   class: "hover:text-blue-500",
                   active_class: "text-blue-600 font-medium",
                   inactive_class: "text-gray-500 " %>

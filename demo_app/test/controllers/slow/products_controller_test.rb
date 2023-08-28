@@ -7,8 +7,8 @@ class Slow::ProductsControllerTest < ActionDispatch::IntegrationTest
 
     product1 = products(:one)
     product2 = products(:two)
-    assert_select "li#product_#{product1.id}"
-    assert_select "li#product_#{product2.id}"
+    assert_select "#products li[data-product-id=#{product1.id}]"
+    assert_select "#products li[data-product-id=#{product2.id}]"
   end
 
   test "raw scopes filter by category" do
@@ -17,7 +17,7 @@ class Slow::ProductsControllerTest < ActionDispatch::IntegrationTest
 
     product1 = products(:one)
     product2 = products(:two)
-    assert_select "li#product_#{product1.id}"
-    assert_select "li#product_#{product2.id}", count: 0
+    assert_select "#products li[data-product-id=#{product1.id}]"
+    assert_select "#products li[data-product-id=#{product2.id}]", count: 0
   end
 end
