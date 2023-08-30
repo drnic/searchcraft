@@ -26,11 +26,18 @@ module SearchCraft::Model
       super
     end
 
+    def included_classes
+      if SearchCraft.config.explicit_model_class_names
+        return SearchCraft.config.explicit_model_class_names.map(&:constantize)
+      end
+      @included_classes
+    end
+
     # Runs .refresh! on all classes that include SearchCraft::Model
     # TODO: eager load all classes that include SearchCraft::Model;
     # perhaps via Builder eager loading?
     def refresh_all!
-      @included_classes.each do |klass|
+      included_classes.each do |klass|
         warn "Refreshing materialized view #{klass.table_name}..." unless Rails.env.test?
         klass.refresh!
       end
