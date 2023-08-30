@@ -5,12 +5,15 @@ module SearchCraft
     initializer "searchcraft.reloader_hook" do
       ActiveSupport::Reloader.to_prepare do
         next unless SearchCraft.database_ready?
-        puts "Running: SearchCraft::Builder.rebuild_any_if_changed!"
+
+        warn "[#{Rails.env}] running: SearchCraft::Builder.rebuild_any_if_changed!" if SearchCraft.debug?
+
         SearchCraft::Builder.rebuild_any_if_changed!
       rescue => e
-        # Probably missing tables before migrations run
-        puts "Preparing SearchCraft: #{e.message}"
-        puts e.backtrace
+        if SearchCraft.debug?
+          puts "Preparing SearchCraft: #{e.message}"
+          puts e.backtrace
+        end
       end
     end
   end

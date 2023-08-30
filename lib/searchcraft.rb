@@ -18,6 +18,10 @@ module SearchCraft
   rescue
     false
   end
+
+  def debug?
+    config.debug
+  end
 end
 
 require "active_record"
