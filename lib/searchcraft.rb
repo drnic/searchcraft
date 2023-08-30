@@ -12,6 +12,12 @@ module SearchCraft
   def config
     @config ||= Configuration.new
   end
+
+  def database_ready?
+    ActiveRecord::Base.connection.table_exists?("schema_migrations")
+  rescue
+    false
+  end
 end
 
 require "active_record"
