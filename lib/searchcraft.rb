@@ -22,6 +22,16 @@ module SearchCraft
   def debug?
     config.debug
   end
+
+  def load_tasks
+    return if @tasks_loaded
+
+    Dir[File.join(File.dirname(__FILE__), "tasks", "**/*.rake")].each do |rake|
+      load rake
+    end
+
+    @tasks_loaded = true
+  end
 end
 
 require "active_record"

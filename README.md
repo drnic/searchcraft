@@ -362,6 +362,19 @@ rm app/models/product_latest_arrival.rb
 git checkout db/schema.rb
 ```
 
+### Rake tasks
+
+SearchCraft provides two rake tasks:
+
+* `rake searchcraft:refresh` - refresh all materialized views
+* `rake searchcraft:rebuild` - check if any views need to be recreated
+
+To add these to your Rails app, add the following to the bottom of your `Rakefile`:
+
+```ruby
+SearchCraft.load_tasks
+```
+
 ### Features
 
 * Watches `Builder` subclasses, and automatically detects change to materialize view schema and recreates it
@@ -369,6 +382,7 @@ git checkout db/schema.rb
 * Dumps `db/schema.rb` whenever materialized view is updated
 * Annotates models whenever materialized view is updated, if `annotate` gem is installed
 * Namespaced models/builders will use the full namesapce + classname for the materialized view name
+* Rake tasks to refresh all materialized views `rake searchcraft:refresh`, and check if any views need to be recreated `rake searchcraft:rebuild`
 
 ## Development
 
