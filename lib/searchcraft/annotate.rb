@@ -20,10 +20,23 @@ module SearchCraft::Annotate
       hide_default_column_types: "",
       ignore_unknown_models: true
     }
-    AnnotateModels.do_annotations(options)
+    capture_stdout do
+      AnnotateModels.do_annotations(options)
+    end
   rescue PG::UndefinedTable
   rescue => e
     puts "Error annotating models: #{e.message}"
     pp e.backtrace
+  end
+
+  def capture_stdout(&block)
+    old_stdout = $stdout
+    $stdout = StringIO.new
+    yield
+    if SearchCraft.debug?
+      puts $stdout.string
+    end
+  ensure
+    $stdout = old_stdout
   end
 end

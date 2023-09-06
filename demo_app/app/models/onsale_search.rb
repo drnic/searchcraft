@@ -2,21 +2,21 @@
 #
 # Table name: onsale_searches
 #
-#  average_review_for_latest :decimal(, )
-#  base_price                :integer
-#  currency                  :string
-#  customer_reviews_count    :bigint
-#  discount_percent          :integer
-#  image_url                 :string
 #  number                    :integer
-#  number_review_for_latest  :bigint
-#  price                     :integer
-#  product_name              :string
-#  reviews_average           :decimal(, )
-#  reviews_count             :bigint
-#  sale_price                :integer
-#  total_review_for_latest   :bigint
 #  product_id                :bigint
+#  product_name              :string
+#  image_url                 :string
+#  base_price                :integer
+#  sale_price                :integer
+#  currency                  :string
+#  price                     :integer
+#  reviews_count             :bigint
+#  reviews_average           :decimal(, )
+#  customer_reviews_count    :bigint
+#  average_review_for_latest :decimal(, )
+#  total_review_for_latest   :bigint
+#  number_review_for_latest  :bigint
+#  discount_percent          :integer
 #
 class OnsaleSearch < ActiveRecord::Base
   include SearchCraft::Model

@@ -1,5 +1,5 @@
 class SearchCraft::Builder
-  include SearchCraft::Annotate
+  extend SearchCraft::Annotate
   include SearchCraft::DependsOn
   include SearchCraft::DumpSchema
 
@@ -34,6 +34,8 @@ class SearchCraft::Builder
         changed = builder.new.recreate_view_if_changed!(builders_changed: builders_changed)
         builders_changed << builder if changed
       end
+
+      annotate_models!
     end
 
     def builders_to_rebuild
@@ -104,23 +106,24 @@ class SearchCraft::Builder
     end
 
     dependencies_changed = (@@dependencies[self.class.name] || []) & builders_changed.map(&:name)
-    return false unless dependencies_changed.any? || SearchCraft::ViewHashStore.changed?(builder: self)
+    if dependencies_changed.any? || SearchCraft::ViewHashStore.changed?(builder: self)
 
-    if SearchCraft.debug?
-      if !SearchCraft::ViewHashStore.exists?(builder: self)
-        warn "Creating #{view_name} because it doesn't yet exist"
-      elsif dependencies_changed.any?
-        warn "Recreating #{view_name} because dependencies changed: #{dependencies_changed.join(" ")}"
-      else
-        warn "Recreating #{view_name} because SQL changed"
+      if SearchCraft.debug?
+        if !SearchCraft::ViewHashStore.exists?(builder: self)
+          warn "Creating #{view_name} because it doesn't yet exist"
+        elsif dependencies_changed.any?
+          warn "Recreating #{view_name} because dependencies changed: #{dependencies_changed.join(" ")}"
+        else
+          warn "Recreating #{view_name} because SQL changed"
+        end
       end
+
+      drop_view!
+      create_view!
+      update_hash_store!
+      dump_schema!
     end
 
-    drop_view!
-    create_view!
-    update_hash_store!
-    dump_schema!
-    annotate_models!
     true
   end
 
