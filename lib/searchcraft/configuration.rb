@@ -4,5 +4,9 @@ module SearchCraft
     attr_accessor :debug
     attr_accessor :explicit_builder_class_names
     attr_accessor :explicit_model_class_names
+
+    def autorebuild?
+      !disable_autorebuild
+    end
   end
 end
