@@ -12,7 +12,11 @@ module SearchCraft::Model
 
   class_methods do
     def refresh!
-      Scenic.database.refresh_materialized_view(table_name, concurrently: false, cascade: false)
+      Scenic.database.refresh_materialized_view(table_name, concurrently: @refresh_concurrently, cascade: false)
+    end
+
+    def refresh_concurrently=(value)
+      @refresh_concurrently = value
     end
   end
 
