@@ -12,7 +12,7 @@ class SearchCraft::Builder
   # an ActiveRecord::Relation.
   # Alternately, override view_select_sql to return a SQL string.
   def view_select_sql
-    view_scope.to_sql
+    @_view_select_sql ||= view_scope.to_sql
   end
 
   class << self
