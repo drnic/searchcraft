@@ -397,6 +397,14 @@ To bump a version number:
 3. Merge that change back into bump commit, e.g. `git add demo_app/Gemfile.lock; git commit --amend --no-edit`
 3. Cut a release `rake release`
 
+```plain
+gem bump -v patch
+(cd demo_app; bundle)
+git add demo_app/Gemfile.lock; git commit --amend --no-edit
+git push
+rake release
+```
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/drnic/searchcraft. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/drnic/searchcraft/blob/develop/CODE_OF_CONDUCT.md).
