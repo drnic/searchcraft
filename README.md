@@ -392,7 +392,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 To bump a version number:
 
-1. Use the `gem bump` command, e.g. `gem bump patch`
+1. Use the `gem bump` command, e.g. `gem bump -v patch`
 2. Update the `demo_app/Gemfile.lock`, e.g. `(cd demo_app; bundle)`
 3. Merge that change back into bump commit, e.g. `git add demo_app/Gemfile.lock; git commit --amend --no-edit`
 3. Cut a release `rake release`
