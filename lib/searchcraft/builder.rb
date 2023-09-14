@@ -106,7 +106,8 @@ class SearchCraft::Builder
     end
 
     dependencies_changed = (@@dependencies[self.class.name] || []) & builders_changed.map(&:name)
-    return false unless dependencies_changed.any? || SearchCraft::ViewHashStore.changed?(builder: self)
+    return false unless dependencies_changed.any? ||
+      SearchCraft::ViewHashStore.changed?(builder: self)
 
     if SearchCraft.debug?
       if !SearchCraft::ViewHashStore.exists?(builder: self)

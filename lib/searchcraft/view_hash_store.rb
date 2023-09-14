@@ -21,18 +21,16 @@ class SearchCraft::ViewHashStore < ActiveRecord::Base
 
     def changed?(builder:)
       setup_table_if_needed!
+
       view_sql_hash = builder.view_sql_hash
-      view_hash_store = find_by(view_name: builder.view_name)
-      # puts "builder: #{builder.class.name}"
-      # puts "latest: #{view_sql_hash}"
-      # puts "stored: #{view_hash_store&.view_sql_hash}"
-      # puts "changed? #{view_hash_store.nil? || view_hash_store.view_sql_hash != view_sql_hash}"
-      view_hash_store.nil? || view_hash_store.view_sql_hash != view_sql_hash
+      view_hash_store = exists?(builder: builder)
+      !view_hash_store || view_hash_store.view_sql_hash != view_sql_hash
     end
 
     def exists?(builder:)
       setup_table_if_needed!
-      find_by(view_name: builder.view_name)
+      connection.schema_cache.data_source_exists?(builder.view_name) &&
+        find_by(view_name: builder.view_name)
     end
 
     def reset!(builder:)
