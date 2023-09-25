@@ -6,4 +6,12 @@ namespace :searchcraft do
       SearchCraft::Builder.rebuild_any_if_changed!
     }
   end
+
+  desc "Recreates all materialized views' indices"
+  task recreate_indexes: :environment do
+    puts "Recreating search builders' indices"
+    puts Benchmark.measure {
+      SearchCraft::Builder.recreate_indexes!
+    }
+  end
 end

@@ -38,6 +38,11 @@ class SearchCraft::Builder
       annotate_models!
     end
 
+    def recreate_indexes!
+      sorted_builders = sort_builders_by_dependency
+      sorted_builders.each { |builder| builder.new.recreate_indexes! }
+    end
+
     def builders_to_rebuild
       if SearchCraft.config.explicit_builder_class_names
         SearchCraft.config.explicit_builder_class_names.map(&:constantize)
@@ -129,23 +134,22 @@ class SearchCraft::Builder
 
   def create_view!
     create_sequence!
-    ActiveRecord::Base.connection.execute(view_sql)
+    sql_execute(view_sql)
     create_indexes!
   end
 
   # Finds and drops all indexes and sequences on view, and then drops view
   def drop_view!
-    # drop indexes used by view before being dropped
-    indexes = ActiveRecord::Base.connection.execute("SELECT indexname FROM pg_indexes WHERE tablename = '#{view_name}';")
-    indexes.each do |index|
-      ActiveRecord::Base.connection.execute("DROP INDEX IF EXISTS #{index["indexname"]};")
-    end
+    sql_execute("DROP MATERIALIZED VIEW IF EXISTS #{view_name} CASCADE;")
 
-    ActiveRecord::Base.connection.execute("DROP MATERIALIZED VIEW IF EXISTS #{view_name} CASCADE;")
-
-    ActiveRecord::Base.connection.execute("DROP SEQUENCE IF EXISTS #{view_id_sequence_name};")
+    sql_execute("DROP SEQUENCE IF EXISTS #{view_id_sequence_name};")
 
     SearchCraft::ViewHashStore.reset!(builder: self)
+  end
+
+  def recreate_indexes!
+    drop_indexes!
+    create_indexes!
   end
 
   # Pluralized table name of class
@@ -171,7 +175,16 @@ class SearchCraft::Builder
   end
 
   def create_sequence!
-    ActiveRecord::Base.connection.execute("CREATE SEQUENCE #{view_id_sequence_name} CYCLE;")
+    sql_execute("CREATE SEQUENCE #{view_id_sequence_name} CYCLE;")
+  end
+
+  def drop_indexes!
+    simple_view_name = view_name.gsub(/^.+\./, "")
+    indexes = sql_execute("SELECT indexname FROM pg_indexes WHERE tablename = '#{simple_view_name}';")
+    indexes.each do |index|
+      warn "DROP INDEX IF EXISTS #{index["indexname"]};" if SearchCraft.debug?
+      sql_execute("DROP INDEX IF EXISTS #{index["indexname"]};")
+    end
   end
 
   def create_indexes!
@@ -186,5 +199,10 @@ class SearchCraft::Builder
 
   def update_hash_store!
     SearchCraft::ViewHashStore.update_for(builder: self)
+  end
+
+  def sql_execute(sql)
+    warn sql if SearchCraft.debug?
+    ActiveRecord::Base.connection.execute(sql)
   end
 end
