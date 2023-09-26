@@ -11,7 +11,6 @@ class SearchCraft::ViewHashStore < ActiveRecord::Base
   self.table_name = "search_craft_view_hash_stores"
 
   class << self
-    # Update record for StoreConnect::SearchCached::Builder::Base subclass
     def update_for(builder:)
       setup_table_if_needed!
       view_sql_hash = builder.view_sql_hash

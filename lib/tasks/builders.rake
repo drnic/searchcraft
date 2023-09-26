@@ -14,4 +14,12 @@ namespace :searchcraft do
       SearchCraft::Builder.recreate_indexes!
     }
   end
+
+  desc "Force recreate all materialize views, including indexes and sequences"
+  task force_recreate: :environment do
+    puts "Force recreateing search builders' materialized views"
+    puts Benchmark.measure {
+      SearchCraft::Builder.rebuild_all!
+    }
+  end
 end

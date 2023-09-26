@@ -38,6 +38,9 @@ class SearchCraft::Builder
       annotate_models!
     end
 
+    def rebuild_all!
+    end
+
     def recreate_indexes!
       sorted_builders = sort_builders_by_dependency
       sorted_builders.each { |builder| builder.new.recreate_indexes! }
@@ -62,7 +65,6 @@ class SearchCraft::Builder
       potential_superclass_names = known_subclass_names + ["SearchCraft::Builder"]
       potential_superclass_regex = Regexp.new(potential_superclass_names.join("|"))
 
-      # Ugh, this doesn't work for StoreConnect
       Rails.configuration.eager_load_paths.each do |load_path|
         Dir.glob("#{load_path}/**/*.rb").each do |file|
           File.readlines(file).each do |line|
