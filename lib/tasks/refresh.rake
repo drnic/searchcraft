@@ -6,7 +6,7 @@ namespace :searchcraft do
     SearchCraft.config.explicit_model_class_names.each do |model_class_name|
       klass = model_class_name.constantize
       puts "Refreshing materialized views for #{klass.name}"
-      puts Benchmark.measure { klass.refresh }
+      puts Benchmark.measure { klass.refresh! }
     end
   end
 end
