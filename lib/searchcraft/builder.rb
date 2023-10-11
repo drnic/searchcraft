@@ -195,6 +195,7 @@ class SearchCraft::Builder
       name = "#{base_idx_name}_#{index_name}"
       options = index_options.except(:columns).merge({name: name})
 
+      warn "ActiveRecord::Base.connection.add_index(#{view_name.inspect}, #{columns.inspect}, #{options.inspect})" if SearchCraft.debug?
       ActiveRecord::Base.connection.add_index(view_name, columns, **options)
     end
   end
