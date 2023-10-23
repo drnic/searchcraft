@@ -419,5 +419,6 @@ Everyone interacting in the Searchcraft project's codebases, issue trackers, cha
 
 ## Credits
 
+* Thanks to [Store Connect](https://getstoreconnect.com/) for assisting the idation and development of this project.
 * [scenic](https://github.com/scenic-views/scenic) gem first allowed me to use materialized views in Rails, but I was iterating on my view schema so frequently that their migration approach - `rails db:rollback`, rebuild migration SQL, `rails db:migrate`, and then test - became slow. It also introduced bugs - I would forget to run the steps, and then see odd behaviour. If you have relatively static views or materialized views, and want to use Rails migrations, please try out `scenic` gem. This `searchcraft` gem still depends on `scenic` for its view `refresh` feature, and adding views into `schema.rb`.
 * [activerecord](https://github.com/rails/rails) has been one of the most wonderful gifts to the universe since its inception. As a bonus, it allowed me to become "Dr Nic" in 2006 when I performed silly tricks with it in a rubygem called "Dr Nic's Magic Models". I've made many dear friends and had a wonderful career since those days.
