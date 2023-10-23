@@ -19,6 +19,12 @@ module SearchCraft
     false
   end
 
+  def dependencies_ready?
+    config.explicit_builder_class_names.all? do |builder_class_name|
+      builder_class_name.constantize.new.dependencies_ready?
+    end
+  end
+
   def debug?
     config.debug
   end

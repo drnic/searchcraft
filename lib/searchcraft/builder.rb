@@ -15,6 +15,12 @@ class SearchCraft::Builder
     @_view_select_sql ||= view_scope.to_sql
   end
 
+  # Override if a Builder SQL has dependencies, such as extensions or text search config
+  # that are required first.
+  def dependencies_ready?
+    true
+  end
+
   class << self
     # Iterate through subclasses, and invoke recreate_view_if_changed!
     def rebuild_any_if_changed!
@@ -111,6 +117,7 @@ class SearchCraft::Builder
       warn "#{self.class.name}#recreate_view_if_changed!"
       warn "  builders_changed: #{builders_changed.map(&:name).join(", ")}" if builders_changed.any?
     end
+    return unless dependencies_ready?
 
     dependencies_changed = (@@dependencies[self.class.name] || []) & builders_changed.map(&:name)
     return false unless dependencies_changed.any? ||

@@ -6,6 +6,7 @@ module SearchCraft
       ActiveSupport::Reloader.to_prepare do
         next unless SearchCraft.database_ready?
         next unless SearchCraft.config.autorebuild?
+        next unless SearchCraft.dependencies_ready?
 
         warn "[#{Rails.env}] running: SearchCraft::Builder.rebuild_any_if_changed!" if SearchCraft.debug?
 
