@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description = "Use your SQL database to power instant search for your Rails app with materalized views"
   spec.homepage = "https://github.com/drnic/searchcraft"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.required_ruby_version = ">= 3.0"
 
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
 
