@@ -1,4 +1,20 @@
 module SearchCraft
+  extend SearchCraft
+
   VERSION: String
-  # See the writing guide of rbs: https://github.com/ruby/rbs#guides
+
+  class Error < StandardError
+  end
+
+  def config: () -> Configuration
+
+  def configure: () { (Configuration) -> void } -> void
+
+  def database_ready?: () -> bool
+
+  def debug?: () -> bool
+
+  def dependencies_ready?: () -> bool
+
+  def load_tasks: () -> void
 end

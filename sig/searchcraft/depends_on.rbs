@@ -1,0 +1,17 @@
+module SearchCraft
+  module DependsOn
+    module ClassMethods
+      def name: () -> String
+
+      def depends_on: (*String) -> void
+
+      def sort_builders_by_dependency: () -> Array[Class]
+
+      def builders_to_rebuild: () -> Array[Class]
+
+      def visit: (Class, Hash[String, bool], Array[Class]) -> void
+    end
+
+    extend ClassMethods
+  end
+end

@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir.chdir(__dir__) do
     `git ls-files -z`.split("\x0").reject do |f|
       (File.expand_path(f) == __FILE__) ||
-        f.start_with?(*%w[bin/ demo_app/ docs/ examples/ test/ spec/ features/ .git appveyor Gemfile])
+        f.start_with?(*%w[bin/ demo_app/ docs/ examples/ test/ spec/ features/ .git appveyor Gemfile Rakefile Steepfile])
     end
   end
   spec.bindir = "exe"
@@ -33,9 +33,9 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "activerecord"
-  spec.add_dependency "activesupport"
   spec.add_dependency "scenic", "~> 1.7"
 
+  spec.add_development_dependency "activesupport"
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "minitest", "~> 5.0"
   spec.add_development_dependency "pg"

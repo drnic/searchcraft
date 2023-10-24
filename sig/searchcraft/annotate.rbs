@@ -1,0 +1,7 @@
+module SearchCraft
+  module Annotate
+    def annotate_models!: () -> void
+
+    def capture_stdout: () { () -> void } -> void
+  end
+end

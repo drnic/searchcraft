@@ -1,0 +1,5 @@
+dependencies:
+	- name: digest
+	- name: activerecord
+	- name: activesupport
+	- name: pg

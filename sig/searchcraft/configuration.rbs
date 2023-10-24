@@ -1,0 +1,23 @@
+module SearchCraft
+  class Configuration
+    public
+
+    def autorebuild?: () -> bool
+
+    def debug: () -> bool
+
+    def debug=: (bool) -> void
+
+    def disable_autorebuild: () -> bool
+
+    def disable_autorebuild=: (bool) -> void
+
+    def explicit_builder_class_names: () -> Array[String]
+
+    def explicit_builder_class_names=: (Array[String]) -> void
+
+    def explicit_model_class_names: () -> Array[String]
+
+    def explicit_model_class_names=: (Array[String]) -> void
+  end
+end

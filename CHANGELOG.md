@@ -1,5 +1,7 @@
 ## [Unreleased]
 
-## [0.1.0] - 2023-08-19
+- RBS type signatures
 
-- Initial release
+## [0.4.0] - 2023-10-24
+
+- Initial public release

@@ -10,3 +10,5 @@ group :development, :test do
   gem "erb_lint", require: false
   gem "ripper-tags", "~> 1.0", require: false
 end
+
+gem "steep", "~> 1.5"

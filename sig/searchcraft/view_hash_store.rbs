@@ -1,0 +1,17 @@
+module SearchCraft
+  class ViewHashStore < ::ActiveRecord::Base
+    def self.any?: () -> bool
+
+    def self.changed?: (builder: Builder) -> bool
+
+    def self.exists?: (builder: Builder) -> (Builder|nil)
+
+    def self.reset!: (builder: Builder) -> void
+
+    def self.setup_table_if_needed!: () -> void
+
+    def self.update_for: (builder: Builder) -> untyped
+
+    def self.find_or_initialize_by: (view_name: String) -> ViewHashStore
+  end
+end

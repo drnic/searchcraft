@@ -1,0 +1,19 @@
+module SearchCraft
+  module Model
+    module ClassMethods
+      def included_classes: () -> Array[ClassMethods]
+
+      def refresh_all!: () -> void
+
+      def table_name: () -> String
+
+      def table_name=: (String) -> void
+
+      def name: () -> String
+
+      def refresh!: () -> void
+    end
+
+    extend ClassMethods
+  end
+end
