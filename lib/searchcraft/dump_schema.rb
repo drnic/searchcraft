@@ -1,6 +1,4 @@
 module SearchCraft::DumpSchema
-  extend ActiveSupport::Concern
-
   # If in Rails, dump schema.rb after rebuilding views
   def dump_schema!
     return unless Rails.env.development?

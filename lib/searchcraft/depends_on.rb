@@ -1,18 +1,9 @@
 module SearchCraft::DependsOn
-  extend ActiveSupport::Concern
-
-  class_methods do
+  module ClassMethods
     @@dependencies = {}
 
     def depends_on(*builder_names)
       @@dependencies[name] = builder_names
-    end
-
-    # TODO: implement .add_index instead of #view_indexes below
-    def add_index(index_name, columns, unique: false, name: nil)
-      @indexes ||= {}
-      # TODO: also get indexes from @@dependencies[name]
-      @indexes[index_name] = {columns: columns, unique: unique, name: name}
     end
 
     def sort_builders_by_dependency
@@ -27,7 +18,7 @@ module SearchCraft::DependsOn
     end
 
     def visit(builder, visited, sorted)
-      return if visited[builder.name]
+      return if visited[builder.name.to_s]
 
       dependency_names = @@dependencies[builder.name] || []
       dependency_names.each do |dependency_name|
@@ -35,8 +26,10 @@ module SearchCraft::DependsOn
         visit(dependency, visited, sorted)
       end
 
-      visited[builder.name] = true
+      visited[builder.name.to_s] = true
       sorted << builder
     end
   end
+
+  extend ClassMethods
 end

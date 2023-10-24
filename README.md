@@ -383,6 +383,7 @@ SearchCraft.load_tasks
 * Annotates models whenever materialized view is updated, if `annotate` gem is installed
 * Namespaced models/builders will use the full namesapce + classname for the materialized view name
 * Rake tasks to refresh all materialized views `rake searchcraft:refresh`, and check if any views need to be recreated `rake searchcraft:rebuild`
+* Rubygem contains RBS type signatures
 
 ## Development
 

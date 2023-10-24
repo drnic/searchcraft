@@ -1,6 +1,7 @@
 class SearchCraft::Builder
   extend SearchCraft::Annotate
   include SearchCraft::DependsOn
+  extend SearchCraft::DependsOn::ClassMethods
   include SearchCraft::DumpSchema
 
   # Subclass must implement view_scope or view_select_sql
@@ -75,7 +76,7 @@ class SearchCraft::Builder
         Dir.glob("#{load_path}/**/*.rb").each do |file|
           File.readlines(file).each do |line|
             if (match = line.match(/class\s+([\w:]+)\s*<\s*#{potential_superclass_regex}/))
-              class_name = match[1]
+              class_name = match[1].to_s
               warn "Found #{class_name} in #{file}" unless known_subclass_names.include?(class_name)
               subclass_names << class_name
             end
@@ -119,6 +120,7 @@ class SearchCraft::Builder
     end
     return unless dependencies_ready?
 
+    @@dependencies ||= {}
     dependencies_changed = (@@dependencies[self.class.name] || []) & builders_changed.map(&:name)
     return false unless dependencies_changed.any? ||
       SearchCraft::ViewHashStore.changed?(builder: self)
@@ -176,7 +178,7 @@ class SearchCraft::Builder
 
   # ProductSearchBuilder name becomes product_searches
   def base_sql_name
-    self.class.name.gsub(/Builder$/, "").tableize.tr("/", "_")
+    self.class.name.to_s.gsub(/Builder$/, "").tableize.tr("/", "_")
   end
 
   def base_idx_name

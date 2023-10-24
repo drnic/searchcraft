@@ -1,0 +1,58 @@
+module SearchCraft
+  class Builder
+    extend SearchCraft::Annotate
+    include SearchCraft::DumpSchema
+
+    include SearchCraft::DependsOn
+    extend SearchCraft::DependsOn::ClassMethods
+    # extend SearchCraft::Annotate
+
+    def self.builders_to_rebuild: () -> Array[Class]
+
+    def self.find_subclasses_via_rails_eager_load_paths: (?known_subclass_names: Array[String]) -> Array[String]
+
+    def self.rebuild_all!: () -> void
+
+    def self.rebuild_any_if_changed!: () -> void
+
+    def self.recreate_indexes!: () -> void
+
+    def create_view!: () -> void
+
+    def dependencies_ready?: () -> bool
+
+    def drop_view!: () -> void
+
+    def recreate_indexes!: () -> void
+
+    def recreate_view_if_changed!: (?builders_changed: Array[Class]) -> void
+
+    def view_indexes: () -> Hash[(String|Symbol), Hash[(String|Symbol), untyped]]
+
+    def view_name: () -> String
+
+    def view_scope: () -> ActiveRecord::Relation
+
+    def view_select_sql: () -> String
+
+    def view_sql: () -> String
+
+    def view_sql_hash: () -> String
+
+    def view_id_sequence_name: () -> String
+
+    def base_sql_name: () -> String
+
+    def base_idx_name: () -> String
+
+    def create_sequence!: () -> void
+
+    def drop_indexes!: () -> void
+
+    def create_indexes!: () -> void
+
+    def update_hash_store!: () -> void
+
+    def sql_execute: (String) -> Array[Hash[String, String]]
+  end
+end

@@ -1,0 +1,21 @@
+# Download sources
+sources:
+  - type: git
+    name: ruby/gem_rbs_collection
+    remote: https://github.com/ruby/gem_rbs_collection.git
+    revision: main
+    repo_dir: gems
+
+# A directory to install the downloaded RBSs
+path: .gem_rbs_collection
+
+gems:
+  - name: digest
+  - name: activerecord
+  - name: activesupport
+  - name: pg
+  # - name: annotate_models
+  # - name: scenic
+
+  - name: steep
+    ignore: true

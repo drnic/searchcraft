@@ -1,0 +1,5 @@
+module SearchCraft
+  module DumpSchema
+    def dump_schema!: () -> void
+  end
+end

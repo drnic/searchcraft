@@ -1,0 +1,33 @@
+class PG::UndefinedTable < StandardError
+end
+
+class IO
+  def string: () -> String
+end
+
+module ActiveRecord
+  def self.schema_format: () -> Symbol
+
+  class Base
+    def self.configurations: () -> ActiveRecord::DatabaseConfigurations
+  end
+end
+
+module Rails
+  class Railtie
+  end
+end
+
+module AnnotateModels
+  def self.do_annotations: (Hash[Symbol, untyped]) -> nil
+end
+
+module Scenic
+  module Adapters
+    class Postgres
+      def refresh_materialized_view: (String, ?concurrently: bool, ?cascade: bool) -> nil
+    end
+  end
+
+  def self.database: () -> Adapters::Postgres
+end

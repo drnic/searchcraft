@@ -1,6 +1,4 @@
 module SearchCraft::Annotate
-  extend ActiveSupport::Concern
-
   # If using annotate gem, then automatically annotate models after rebuilding views
   # TODO: I'm suspicious this is not working for dependent Builders, e.g. demo_app's OnsaleSearchBuilder
   def annotate_models!

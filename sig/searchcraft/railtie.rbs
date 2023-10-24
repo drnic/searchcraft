@@ -1,0 +1,5 @@
+module SearchCraft
+  class Railtie < ::Rails::Railtie
+    def self.initializer: (String) { () -> void } -> void
+  end
+end
