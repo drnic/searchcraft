@@ -3,6 +3,7 @@ class SearchCraft::Builder
   include SearchCraft::DependsOn
   extend SearchCraft::DependsOn::ClassMethods
   include SearchCraft::DumpSchema
+  include SearchCraft::TextSearch
 
   # Subclass must implement view_scope or view_select_sql
   def view_scope

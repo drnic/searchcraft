@@ -134,6 +134,88 @@ Number.all
 [#<Number number: 1>, #<Number number: 2>, #<Number number: 3>, #<Number number: 4>, #<Number number: 5>]
 ```
 
+### Indexes
+
+A wonderful feature of materialized views is you can add indexes to them; even unique indexes.
+
+Currently the mechanism for adding indexes is to add a `view_indexes` method to your builder class.
+
+For example, we can add a unique index on `NumberBuilder`'s `number` column:
+
+```ruby
+class NumberBuilder < SearchCraft::Builder
+  def view_indexes
+    {
+      number: {columns: ["number"], unique: true}
+    }
+  end
+```
+
+Or several indexes on the `ProductSearchBuilder` from earlier:
+
+```ruby
+class ProductSearchBuilder < SearchCraft::Builder
+  def view_indexes
+    {
+      id: {columns: ["product_id"], unique: true},
+      product_name: {columns: ["product_name"]},
+      reviews_count: {columns: ["reviews_count"]},
+      reviews_average: {columns: ["reviews_average"]}
+    }
+  end
+end
+```
+
+By default the indexes will be `using: :btree` indexing method. You can also use other indexing methods available in rails, such as `:gin`, `:gist`, or if you're using the `trigram` extension you can use `:gin_trgm_ops`. These can be useful when you're looking at setting up text search, as discussed below.
+
+### Search
+
+Another benefit of materialized views is we can create columns that are optimised for search. For example above, since we've precalculated the `reviews_average` in `ProductSearchBuilder`, we can easily find products with a certain average rating.
+
+```ruby
+ProductSearch.where("reviews_average > 4")
+```
+
+### Associations
+
+A fabulous feature of ActiveRecord is the ability to join queries together. Since our materialized views are native ActiveRecord models, we can join them together with other queries.
+
+Let's setup an association between our MV's `ProductSearch#product_id` and the table `Product#id` primary key:
+
+```ruby
+class ProductSearch < ActiveRecord::Base
+  include SearchCraft::Model
+
+  belongs_to :product, foreign_key: :product_id, primary_key: :id
+end
+```
+
+We can now join, or eager load, the tables together with ActiveRecord queries. To following returns a relation of `ProductSearch` objects, with each of their `ProductSearch#product` association preloaded.
+
+```ruby
+ProductSearch.includes(:product).where("reviews_average > 4")
+```
+
+The following returns `Product` objects, based on seaching the `ProductSearch` materialized view:
+
+```ruby
+class Product
+  has_one :product_search, foreign_key: :product_id, primary_key: :id, class_name: "ProductSearch"
+end
+
+Product.joins(:product_searches).merge(
+  ProductSearch.where("reviews_average > 4")
+)
+```
+
+### Text search
+
+PostgreSQL comes with a solution for [text search](https://www.postgresql.org/docs/current/textsearch.html) using a combination of functions such as `to_tsvector`, `ts_rank`, and `websearch_to_tsquery`.
+
+Pending more docs, see the [`test/searchcraft/builder/test_text_search.rb`](test/searchcraft/builder/test_text_search.rb) for an example of how to use these functions in your materialized views.
+
+I'm still working on extracting this solution from our code at [Store Connect](https://getstoreconnect.com).
+
 ### Dependencies between views
 
 Once you have one SearchCraft materialized view, you might want to create another that depends upon it. You can do this too with the `depends_on` method.
@@ -420,6 +502,6 @@ Everyone interacting in the Searchcraft project's codebases, issue trackers, cha
 
 ## Credits
 
-* Thanks to [Store Connect](https://getstoreconnect.com/) for assisting the idation and development of this project.
+* Thanks to [Store Connect](https://getstoreconnect.com/) for assisting the ideation and development of this project.
 * [scenic](https://github.com/scenic-views/scenic) gem first allowed me to use materialized views in Rails, but I was iterating on my view schema so frequently that their migration approach - `rails db:rollback`, rebuild migration SQL, `rails db:migrate`, and then test - became slow. It also introduced bugs - I would forget to run the steps, and then see odd behaviour. If you have relatively static views or materialized views, and want to use Rails migrations, please try out `scenic` gem. This `searchcraft` gem still depends on `scenic` for its view `refresh` feature, and adding views into `schema.rb`.
 * [activerecord](https://github.com/rails/rails) has been one of the most wonderful gifts to the universe since its inception. As a bonus, it allowed me to become "Dr Nic" in 2006 when I performed silly tricks with it in a rubygem called "Dr Nic's Magic Models". I've made many dear friends and had a wonderful career since those days.

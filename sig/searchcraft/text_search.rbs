@@ -1,0 +1,11 @@
+module SearchCraft
+  module TextSearch
+    public
+
+    def coalesce: (Array[String|Arel::Nodes::SqlLiteral]) -> void
+
+    def setweight_arel: (*String|Arel::Nodes::SqlLiteral, ?weight: String, ?language: String) -> untyped
+
+    def to_tsvector_arel: (*String|Arel::Nodes::SqlLiteral, ?language: String) -> untyped
+  end
+end
