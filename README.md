@@ -18,7 +18,7 @@ See [demo app](https://ykdnr.hatchboxapp.com/searchcraft/products?category_id=54
 
 Add lightning quick search capabilities to your Rails apps without external systems like ElasticSearch. It's now magically simple to craft the ActiveRecord/Arel expressions we already know and love, and convert them into SQL materialized views: ready to be queried and composed with ActiveRecord. Everything you love about Rails, but faster.
 
-**What makes Rails slow for search?** Large tables, lots of joins, subqueries, missing or unused indexes, and complex queries.
+**What makes Rails slow for search?** Large tables, lots of joins, subqueries, missing or unused indexes, and complex queries. Also slow? Coordinating data from multiple external systems through Ruby to produce search results.
 
 SearchCraft makes it trivial to write and use powerful **SQL materialized views** to pre-calculate the results of your search and reporting queries. It's like a database index, but for complex queries.
 
