@@ -1,6 +1,12 @@
 require "scenic"
 
 module SearchCraft::Model
+  @included_classes = if SearchCraft.config.explicit_model_class_names
+    SearchCraft.config.explicit_model_class_names.map(&:constantize)
+  else
+    []
+  end
+
   # Class method to add a class to the list of included classes
   def self.included(base)
     if base.is_a?(Class)
@@ -10,18 +16,15 @@ module SearchCraft::Model
         base.table_name = base.name.to_s.tableize.tr("/", "_")
 
         # Maintain a list of classes that include this module
-        included_classes << base
+        @included_classes << base
       end
-
     end
     super
   end
 
   # Runs .refresh! on all classes that include SearchCraft::Model
-  # TODO: eager load all classes that include SearchCraft::Model;
-  # perhaps via Builder eager loading?
   def self.refresh_all!
-    included_classes.each do |klass|
+    @included_classes.each do |klass|
       warn "Refreshing materialized view #{klass.table_name}..." unless Rails.env.test?
       if klass.is_a?(ClassMethods)
         klass.refresh!
@@ -30,12 +33,6 @@ module SearchCraft::Model
   end
 
   def self.included_classes
-    @included_classes ||= []
-
-    if SearchCraft.config.explicit_model_class_names
-      return SearchCraft.config.explicit_model_class_names.map(&:constantize)
-    end
-
     @included_classes
   end
 

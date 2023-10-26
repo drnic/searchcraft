@@ -12,7 +12,7 @@ describe SearchCraft::Model do
     config.explicit_model_class_names = ["ExplicitModel"]
 
     SearchCraft.stub :config, config do
-      assert_equal [ExplicitModel], SearchCraft::Model.included_classes
+      assert_includes SearchCraft::Model.included_classes, ExplicitModel
     end
   end
 end
