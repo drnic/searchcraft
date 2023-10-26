@@ -1,12 +1,6 @@
 require "scenic"
 
 module SearchCraft::Model
-  @included_classes = if SearchCraft.config.explicit_model_class_names
-    SearchCraft.config.explicit_model_class_names.map(&:constantize)
-  else
-    []
-  end
-
   # Class method to add a class to the list of included classes
   def self.included(base)
     if base.is_a?(Class)
@@ -16,6 +10,12 @@ module SearchCraft::Model
         base.table_name = base.name.to_s.tableize.tr("/", "_")
 
         # Maintain a list of classes that include this module
+        @included_classes ||= if SearchCraft.config.explicit_model_class_names
+          SearchCraft.config.explicit_model_class_names.map(&:constantize)
+        else
+          []
+        end
+
         @included_classes << base
       end
     end
