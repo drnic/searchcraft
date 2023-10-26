@@ -1,6 +1,9 @@
 require "scenic"
 
 module SearchCraft::Model
+  # Maintain a list of classes that include this module
+  @included_classes = []
+
   # Class method to add a class to the list of included classes
   def self.included(base)
     if base.is_a?(Class)
@@ -9,14 +12,7 @@ module SearchCraft::Model
       if base.is_a?(ClassMethods) && base.respond_to?(:table_name=)
         base.table_name = base.name.to_s.tableize.tr("/", "_")
 
-        # Maintain a list of classes that include this module
-        @included_classes ||= if SearchCraft.config.explicit_model_class_names
-          SearchCraft.config.explicit_model_class_names.map(&:constantize)
-        else
-          []
-        end
-
-        @included_classes << base
+        @included_classes << base unless @included_classes.include?(base)
       end
     end
     super
@@ -24,7 +20,7 @@ module SearchCraft::Model
 
   # Runs .refresh! on all classes that include SearchCraft::Model
   def self.refresh_all!
-    @included_classes.each do |klass|
+    included_classes.each do |klass|
       warn "Refreshing materialized view #{klass.table_name}..." unless Rails.env.test?
       if klass.is_a?(ClassMethods)
         klass.refresh!
@@ -33,7 +29,11 @@ module SearchCraft::Model
   end
 
   def self.included_classes
-    @included_classes
+    @included_classes | if SearchCraft.config.explicit_model_class_names
+      SearchCraft.config.explicit_model_class_names.map(&:constantize)
+    else
+      []
+    end
   end
 
   module ClassMethods
