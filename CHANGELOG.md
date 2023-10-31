@@ -1,4 +1,4 @@
-## [Unreleased]
+## [0.4.1] - 2023-11-01
 
 - [`SearchCraft::TextSearch`](lib/searchcraft/text_search.rb) module added to `Builder` which provides `tsvector` helpers. See [`test_text_search.rb`](test/searchcraft/builder/test_text_search.rb) for examples.
 - RBS type signatures
