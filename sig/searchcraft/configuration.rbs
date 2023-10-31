@@ -23,5 +23,9 @@ module SearchCraft
     def explicit_model_class_names: () -> Array[String]
 
     def explicit_model_class_names=: (Array[String]) -> void
+
+    def view_hash_store_table_name: () -> String
+
+    def view_hash_store_table_name=: (String) -> void
   end
 end

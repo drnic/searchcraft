@@ -5,6 +5,7 @@ module SearchCraft
     attr_reader :explicit_builder_classes
     attr_accessor :explicit_builder_class_names
     attr_accessor :explicit_model_class_names
+    attr_reader :view_hash_store_table_name
 
     def autorebuild?
       !disable_autorebuild
@@ -20,6 +21,11 @@ module SearchCraft
       @explicit_builder_classes = builders_and_models
       @explicit_builder_class_names = builders_and_models.keys
       @explicit_model_class_names = builders_and_models.values
+    end
+
+    def view_hash_store_table_name=(table_name)
+      @view_hash_store_table_name = table_name
+      SearchCraft::ViewHashStore.table_name = table_name
     end
   end
 end

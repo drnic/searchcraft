@@ -8,6 +8,7 @@
 # search_craft_view_hash_stores, which is automatically
 # created by SearchCraft.
 class SearchCraft::ViewHashStore < ActiveRecord::Base
+  # Possibly overridden by SearchCraft.config.view_hash_store_table_name=(table_name)
   self.table_name = "search_craft_view_hash_stores"
 
   class << self
@@ -46,7 +47,7 @@ class SearchCraft::ViewHashStore < ActiveRecord::Base
 
       # Migrate table
       create_table_sql = <<~SQL
-        CREATE TABLE search_craft_view_hash_stores (
+        CREATE TABLE #{table_name} (
           id serial primary key,
           view_name varchar(255) not null,
           view_sql_hash varchar(255) not null,
