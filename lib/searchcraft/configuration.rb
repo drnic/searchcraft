@@ -1,7 +1,7 @@
 module SearchCraft
   class Configuration
     attr_accessor :disable_autorebuild
-    attr_accessor :debug
+    attr_writer :debug
     attr_reader :explicit_builder_classes
     attr_accessor :explicit_builder_class_names
     attr_accessor :explicit_model_class_names
@@ -9,6 +9,10 @@ module SearchCraft
 
     def autorebuild?
       !disable_autorebuild
+    end
+
+    def debug
+      @debug || ENV["SEARCHCRAFT_DEBUG"] == "true"
     end
 
     # If you need to explicitly list the builder + model classes you want to use,
