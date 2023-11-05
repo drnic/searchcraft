@@ -12,6 +12,10 @@ module SearchCraft
 
     def disable_autorebuild=: (bool) -> void
 
+    def disable_annotate: () -> bool
+
+    def disable_annotate=: (bool) -> void
+
     def explicit_builder_classes: () -> Hash[String, String]
 
     def explicit_builder_classes=: (Hash[String, String]) -> void

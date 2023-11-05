@@ -1,6 +1,7 @@
 module SearchCraft
   class Configuration
     attr_accessor :disable_autorebuild
+    attr_accessor :disable_annotate
     attr_writer :debug
     attr_reader :explicit_builder_classes
     attr_accessor :explicit_builder_class_names
