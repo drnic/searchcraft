@@ -2,6 +2,10 @@
 
 - `SEARCHCRAFT_DEBUG=true` is the same as `SearchCraft.debug = true` and shows internal debugging of errors and activities
 
+Fixes:
+
+- `SearchCraft.dependencies_ready?` (used on launch) is fixed for normal/default case where `explicit_builder_class_names` not provided
+
 ## [0.4.1] - 2023-11-01
 
 - [`SearchCraft::TextSearch`](lib/searchcraft/text_search.rb) module added to `Builder` which provides `tsvector` helpers. See [`test_text_search.rb`](test/searchcraft/builder/test_text_search.rb) for examples.

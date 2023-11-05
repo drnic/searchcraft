@@ -20,8 +20,8 @@ module SearchCraft
   end
 
   def dependencies_ready?
-    config.explicit_builder_class_names.all? do |builder_class_name|
-      builder_class_name.constantize.new.dependencies_ready?
+    Builder.builders_to_rebuild.all? do |builder_class|
+      builder_class.new.dependencies_ready?
     end
   end
 
