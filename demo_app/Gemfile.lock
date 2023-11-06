@@ -1,7 +1,7 @@
 PATH
   remote: ..
   specs:
-    searchcraft (0.4.1)
+    searchcraft (0.4.2)
       activerecord
       scenic (~> 1.7)
 

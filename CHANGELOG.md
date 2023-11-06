@@ -1,5 +1,7 @@
 ## Not Yet Released
 
+## [0.4.2] - 2023-11-06
+
 - `SEARCHCRAFT_DEBUG=true` is the same as `SearchCraft.debug = true` and shows internal debugging of errors and activities
 - `SearchCraft.config.disable_annotate = true` to disable automatic annotation of models (which is enabled by default if `annotate_model` gem discovered)
 
