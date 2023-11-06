@@ -1,7 +1,4 @@
 SearchCraft.configure do |config|
-  # Set debug=true to show progress + errors
-  config.debug = ENV["SEARCHCRAFT_DEBUG"] == "true"
-
   config.disable_autorebuild = Rails.env.production?
 
   # If autodiscovery does not work for you, you can explicitly list the
